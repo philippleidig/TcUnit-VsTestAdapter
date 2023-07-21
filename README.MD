@@ -25,6 +25,8 @@ Execute
     vstest.console.exe "path/to/xae.tsproj"
 ```
 
+![vs-test-console.png](/assets/images/vs-test-console.png)
+
 Determine if TcUnit test adapter is registered
 ```
     vstest.console.exe /listdiscoverers

@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcUnit.Core", "src\TcUnit.C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcUnit.TestAdapter", "src\TcUnit.TestAdapter\TcUnit.TestAdapter.csproj", "{1B659D40-242B-4A1B-B3B7-9FBC4397A554}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TcUnit.VSIX", "src\TcUnit.VSIX\TcUnit.VSIX.csproj", "{EE6C456E-74C2-4884-B0F9-2478594C2918}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{1B659D40-242B-4A1B-B3B7-9FBC4397A554}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1B659D40-242B-4A1B-B3B7-9FBC4397A554}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1B659D40-242B-4A1B-B3B7-9FBC4397A554}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE6C456E-74C2-4884-B0F9-2478594C2918}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE6C456E-74C2-4884-B0F9-2478594C2918}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE6C456E-74C2-4884-B0F9-2478594C2918}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE6C456E-74C2-4884-B0F9-2478594C2918}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

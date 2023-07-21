@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{FB3C727E-0BC2-4EC7-BBD4-69CCB0EB896B}</ProjectGuid>
+    <ProjectGuid>{3073861C-2992-44CC-AE50-F1E243131958}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TcUnit.Core</RootNamespace>
@@ -41,7 +41,21 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ITestRunner.cs" />
+    <Compile Include="Models\Accessor.cs" />
+    <Compile Include="Models\FunctionBlock_POU.cs" />
+    <Compile Include="Models\Method_POU.cs" />
+    <Compile Include="Models\PlcProject.cs" />
+    <Compile Include="Models\POU.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestCase.cs" />
+    <Compile Include="TestOptions.cs" />
+    <Compile Include="TestCaseFactory.cs" />
+    <Compile Include="TestSuite.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Discovery\" />
+    <Folder Include="Execution\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

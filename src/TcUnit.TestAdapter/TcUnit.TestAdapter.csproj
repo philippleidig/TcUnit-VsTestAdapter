@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1A5B9CB4-C183-48D2-87AF-DC6857C294DB}</ProjectGuid>
+    <ProjectGuid>{1B659D40-242B-4A1B-B3B7-9FBC4397A554}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>TcUnit.TestAdapter</RootNamespace>
@@ -63,11 +63,20 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SettingsProvider.cs" />
+    <Compile Include="TestCaseExtensions.cs" />
     <Compile Include="TestDiscovery.cs" />
     <Compile Include="TestExecutor.cs" />
+    <Compile Include="TestSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TcUnit.Core\TcUnit.Core.csproj">
+      <Project>{3073861c-2992-44cc-ae50-f1e243131958}</Project>
+      <Name>TcUnit.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

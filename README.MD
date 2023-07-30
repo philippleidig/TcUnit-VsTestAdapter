@@ -16,7 +16,7 @@ For more details see [vstest test adapter extensibility](https://github.com/micr
 
 ## vstest.console.exe
 
-### VS2017
+### VS2019
 
 Execute
 
@@ -56,7 +56,7 @@ runsettings sample
 </RunSettings>
 ```
 
-### VS2019
+### VS2017
 
 ```
     cd "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\Common7\IDE\Extensions\TestPlatform"

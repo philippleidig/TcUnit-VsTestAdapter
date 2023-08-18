@@ -9,14 +9,17 @@ TcUnit-VsTestAdapter makes it possible to execute [TcUnit](https://github.com/tc
 
 For more details see [vstest test adapter extensibility](https://github.com/microsoft/vstest/blob/main/docs/RFCs/0004-Adapter-Extensibility.md)
 
-## Visual Studio Extension (VSIX)
-
-![vs-test-explorer](/assets/images/vs-test-explorer.png)
-
-
 ## vstest.console.exe
 
+### Nuget package - [Microsoft.TestPlatform](https://www.nuget.org/packages/Microsoft.TestPlatform) 
+### or [Microsoft.TestPlatform.Portable](https://www.nuget.org/packages/Microsoft.TestPlatform.Portable)
+
 ### VS2019
+
+Prerequisites
+
+- Copy *.dll files to "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\Extensions\TestPlatform"
+
 
 Execute
 
@@ -39,19 +42,15 @@ vstest.console.exe /TestAdapterPath:"folder\to\testadapter"
 
 Use custom run settings
 ```
-vstest.console.exe /Settings:TcUnit.runsettings
+vstest.console.exe /Settings:path\to\TcUnit.runsettings
 ```
 
-runsettings sample
+TcUnit.runsettings sample
 ```
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
-    <RunConfiguration>
-        <ResultsDirectory>.\TestResults</ResultsDirectory>
-        <TestAdaptersPaths>%SystemDrive%\Temp\foo</TestAdaptersPaths>
-    </RunConfiguration>
     <TcUnit>
-        <Target>127.0.0.1.1.1</Target>    
+        <Target>127.0.0.1.1.1</Target> 
     </TcUnit>
 </RunSettings>
 ```

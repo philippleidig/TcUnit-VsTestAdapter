@@ -2,21 +2,29 @@
 <package >
   <metadata>
     <id>TcUnit.TestAdapter</id>
-    <version>1.0.1</version>
+    <version>0.0.1</version>
     <title>TcUnit.TestAdapter</title>
     <authors>Philipp Leidig</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>
-    <license type="expression">MIT</license>
+    <license type="file">LICENSE.md</license>
     <projectUrl>https://github.com/philippleidig/TcUnit-VsTestAdapter</projectUrl>
-    <icon>images/TcUnit.png</icon>
-    <description>TcUnit TestAdapter for VSTest</description>
+    <icon>assets\images/TcUnit.png</icon>
+    <description>
+      TcUnit.TestAdapter makes it possible to execute TcUnit with the Microsoft Visual Studio Test Plattform
+    </description>
     <releaseNotes></releaseNotes>
-    <copyright></copyright>
+    <copyright>Copyright (c) Philipp Leidig 2023</copyright>
+    <readme>README.md</readme>
     <tags>TwinCAT Beckhoff TcUnit TestFramework TestAdapter VisualStudio Unittest Microsoft</tags>
+    <dependencies>
+      <group targetFramework="netstandard2.0">
+        <dependency id="Beckhoff.TwinCAT.Ads" version="6.0.0" />
+      </group>
+    </dependencies>
   </metadata>
   <files>
-    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TcUnit.TestAdapter.dll" target="lib\TcUnit.TestAdapter.dll"/>
-    <file src="assets\images\TcUnit.png" target="images/TcUnit.png"/>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TcUnit.TestAdapter.dll" target="lib\netstandard2.0\TcUnit.TestAdapter.dll"/>
+    <file src="assets\images\TcUnit.png" target="assets\images/TcUnit.png"/>
     <file src="README.md" target="README.md"/>
     <file src="LICENSE.md" target="LICENSE.md"/>
   </files>

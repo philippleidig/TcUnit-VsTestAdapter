@@ -6,7 +6,13 @@ using System.Threading.Tasks;
 
 namespace TcUnit.Core
 {
-    class TestCaseFactory
+    public enum RTPlatform
     {
+        Unknown,
+        WinCE,
+        Win32,
+        WinNT,
+        TcBSD,
+        TcRTOS
     }
 }

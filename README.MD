@@ -38,7 +38,7 @@ Let's assume that the working folder is `C:\Tools`.
 Find `vstest.console.exe` in `C:\Tools\Microsoft.TestPlatform.16.7.1\tools\net451\Common7\IDE\Extensions\TestPlatform`. 
 Add this folder to the PATH environment variable.
 
-3. Install TcUnit.TestAdapter
+3. Install [TcUnit.TestAdapter](https://www.nuget.org/packages/TcUnit.TestAdapter)
 
     ```
     nuget install TcUnit.TestAdapter
@@ -47,7 +47,7 @@ Add this folder to the PATH environment variable.
 4. You may now create a *.cmd / *.ps1 file, put it inside your TcUnit tests project and run it after compile
 
     ```
-    vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:TcUnit.runsettings /TestCaseFilter:FullyQualifiedName~LIS *\*.plcproj
+    vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:TcUnit.runsettings *\*.plcproj
     ```
 
     ![twincat-deployment.png](/assets/images/twincat-deployment.png)
@@ -88,7 +88,7 @@ Add this folder to the PATH environment variable.
         arguments: 'install TcUnit.TestAdapter -Version $(TcUnitTestAdapterVersion)'    
     ```
     
-    In the pipeline settings set **TcUnitTestAdapterVersion** variable to the TcUnit.TestAdapter version you want to install (e.g. 1.0.1). The task will install Rapise.TestAdapter into 
+    In the pipeline settings set **TcUnitTestAdapterVersion** variable to the TcUnit.TestAdapter version you want to install (e.g. 1.0.0). The task will install TcUnit.TestAdapter into 
     
     ```
     $(Build.Repository.LocalPath)\TcUnit.TestAdapter.$(TcUnitTestAdapterVersion)\lib\netstandard2.0
@@ -125,10 +125,10 @@ Add this folder to the PATH environment variable.
     Make sure that path to custom test set adapters is set to
     
     ```
-    $(Build.Repository.LocalPath)\Rapise.TestAdapter.$(RapiseTestAdapterVersion)\lib\net472
+    $(Build.Repository.LocalPath)\TcUnit.TestAdapter.$(TcUnitTestAdapterVersion)\lib\netstandard2.0
     ```
     
-    Specify patterns to search for `*.sstest` files in the **test files** section (`testAssemblyVer2` in YAML).
+    Specify patterns to search for `*.plcproj` files in the **test files** section (`testAssemblyVer2` in YAML).
     
     If you added Visual Studio Test Platform Installer task on the previous step do not forget to set `vsTestVersion` in YAML (or Test platform version in Classic UI):
     
@@ -149,14 +149,9 @@ Add this folder to the PATH environment variable.
         ArtifactName: TestResults
     ```
 
-
-   
 ### Test Filter Cirteria  
 
 TcUnit.TestAdapter supports [filter criteria](https://github.com/Microsoft/vstest-docs/blob/master/docs/filter.md) 
-based on FullyQualifiedName test property (equals to  *.sstest file name). 
-
-
 
 ### RunSettings
 

@@ -1,0 +1,65 @@
+
+name: publish
+on:
+  push:
+    branches:
+    - main
+
+  pull_request:
+    branches:
+    - '*'
+
+  release:
+    types:
+    - published
+
+env:
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: 1
+  DOTNET_NOLOGO: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+
+    - name: Set VERSION variable from tag
+      run: echo "VERSION=${GITHUB_REF/refs\/tags\/v/}" >> $GITHUB_ENV
+
+    - name: Build
+      run: dotnet build --configuration Release /p:Version=${VERSION}
+
+    - name: Pack
+      run: dotnet pack --configuration Release /p:Version=${VERSION} --no-build --output .
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: nuget
+        if-no-files-found: error
+        retention-days: 7
+        path: TcUnit.TestAdapter.${VERSION}.nupkg
+
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [ build ]
+    steps:
+
+    - uses: actions/download-artifact@v3
+      with:
+        name: nuget
+        path: .
+
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3   
+
+    - name: Push
+      run: dotnet nuget push TcUnit.TestAdapter.${VERSION}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${GITHUB_TOKEN}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

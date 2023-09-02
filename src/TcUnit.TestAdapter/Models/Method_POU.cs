@@ -9,8 +9,6 @@ namespace TcUnit.TestAdapter.Models
 {
     public class Method_POU : POU
     {
-
-
         internal Method_POU(string name, string dataType, Guid id, string declaration, string implementation)
         {
             Name = name;

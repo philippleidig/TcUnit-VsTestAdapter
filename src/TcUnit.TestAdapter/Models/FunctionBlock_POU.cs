@@ -44,7 +44,6 @@ namespace TcUnit.TestAdapter.Models
             functionBlock.Id = Guid.Parse(xelement.Attribute("Id").Value);
 
             var declaration = xelement.Element("Declaration").Value;
-            var implementation = xelement.Element("Implementation").Element("ST").Value;
 
             foreach (XElement xelement2 in xelement.Elements("Method"))
             {

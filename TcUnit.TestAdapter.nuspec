@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package >
+  <metadata>
+    <id>TcUnit.TestAdapter</id>
+    <version>1.0.1</version>
+    <title>TcUnit.TestAdapter</title>
+    <authors>Philipp Leidig</authors>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>
+    <license type="expression">MIT</license>
+    <projectUrl>https://github.com/philippleidig/TcUnit-VsTestAdapter</projectUrl>
+    <icon>images/TcUnit.png</icon>
+    <description>TcUnit TestAdapter for VSTest</description>
+    <releaseNotes></releaseNotes>
+    <copyright></copyright>
+    <tags>TwinCAT Beckhoff TcUnit TestFramework TestAdapter VisualStudio Unittest Microsoft</tags>
+  </metadata>
+  <files>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TcUnit.TestAdapter.dll" target="lib\TcUnit.TestAdapter.dll"/>
+    <file src="assets\images\TcUnit.png" target="images/TcUnit.png"/>
+    <file src="README.md" target="README.md"/>
+    <file src="LICENSE.md" target="LICENSE.md"/>
+  </files>
+</package>

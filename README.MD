@@ -47,7 +47,7 @@ Add this folder to the PATH environment variable.
 4. You may now create a *.cmd / *.ps1 file, put it inside your TcUnit tests project and run it after compile
 
     ```
-    vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:TcUnit.runsettings *\*.plcproj
+    vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:TcUnit.runsettings *\*.tsproj
     ```
 
     ![twincat-deployment.png](/assets/images/twincat-deployment.png)
@@ -170,4 +170,13 @@ vstest.console.exe /Settings:path\to\TcUnit.runsettings
         <Port>851</Port>
     </TcUnit>
 </RunSettings>
+```
+
+
+
+
+```
+ cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\Extensions\TestPlatform"
+ .\vstest.console.exe /TestAdapterPath:C:\Users\philipple\Desktop\TcUnit-VsTestAdapter\src\TcUnit.TestAdapter\bin\Release\netstandard2.0 /Settings:C:\Temp\TcUnit.runsettings C:\Temp\TcXaeProject\TcXaeProject\TcXaeProject.tsproj
+
 ```

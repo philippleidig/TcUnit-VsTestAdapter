@@ -20,7 +20,7 @@ namespace TcUnit.TestAdapter.RunSettings
         }
 
         public string Target;
-        public int Port;
+        public bool CleanUpAfterTestRun;
 
         public override XmlElement ToXml()
         {

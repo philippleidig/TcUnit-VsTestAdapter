@@ -39,15 +39,15 @@ namespace TcUnit.TestAdapter.Models
             functionBlock.Name = file.Replace(".TcPOU", "");
             functionBlock.FilePath = filepath;
 
-            XElement xelement = XDocument.Load(filepath, LoadOptions.SetLineInfo).Element("TcPlcObject").Elements("POU").First<XElement>();
+            XElement xFunctionBlock = XDocument.Load(filepath, LoadOptions.SetLineInfo).Element("TcPlcObject").Elements("POU").First<XElement>();
 
-            functionBlock.Id = Guid.Parse(xelement.Attribute("Id").Value);
+            functionBlock.Id = Guid.Parse(xFunctionBlock.Attribute("Id").Value);
 
-            var declaration = xelement.Element("Declaration").Value;
+           // var declaration = xFunctionBlock.Element("Declaration").Value;
 
-            foreach (XElement xelement2 in xelement.Elements("Method"))
+            foreach (XElement xMethod in xFunctionBlock.Elements("Method"))
             {
-                var method = Method_POU.Parse(xelement2);
+                var method = Method_POU.Parse(xMethod);
                 functionBlock.Methods.Add(method.Name, method);
             }
 

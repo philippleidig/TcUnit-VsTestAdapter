@@ -4,8 +4,13 @@
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <NuspecFile>..\..\TcUnit.TestAdapter.nuspec</NuspecFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Beckhoff.TwinCAT.Ads" Version="6.0.282" />
+    <PackageReference Include="Beckhoff.TwinCAT.Ads.Abstractions" Version="6.0.282" />
     <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="17.7.2" />
   </ItemGroup>
 

@@ -2,6 +2,7 @@
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using System.ComponentModel.Composition;
 using System.Xml;
+using System.Xml.Linq;
 using System.Xml.Serialization;
 
 namespace TcUnit.TestAdapter.RunSettings
@@ -28,7 +29,15 @@ namespace TcUnit.TestAdapter.RunSettings
 
             if (reader.Read() && reader.Name.Equals(Name))
             {
-                Settings = serializer.Deserialize(reader) as TestSettings;
+                var runSettings = XDocument.Load(reader);
+                var rootElement = runSettings.Element(TestAdapter.RunSettingsName);
+
+                Settings.Target = rootElement.Element("Target")?.Value ?? TestAdapter.DefaultTargetRuntime;
+
+                var cleanUpAfterRun = rootElement.Element("CleanUpAfterTestRun")?.Value;
+
+                if (!string.IsNullOrEmpty(cleanUpAfterRun))
+                Settings.CleanUpAfterTestRun = bool.Parse(cleanUpAfterRun);
             }
         }
     }

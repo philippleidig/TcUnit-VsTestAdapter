@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TcUnit.Core
+namespace TcUnit.TestAdapter.Common
 {
     public enum RTPlatform
     {

@@ -17,7 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\TcUnit.TestAdapter\TcUnit.TestAdapter.csproj" />
+    <ProjectReference Include="..\..\src\TcUnit.TestAdapter\TcUnit.TestAdapter.csproj" />
   </ItemGroup>
 
 </Project>

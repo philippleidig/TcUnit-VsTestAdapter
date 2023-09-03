@@ -15,6 +15,7 @@ For more details see [vstest test adapter extensibility](https://github.com/micr
 - [Usage](#usage)
     - [vstest.console.exe](#vstest.console.exe)
     - [Azure Pipelines](#azure-pipelines)
+- [Best Practice](#best-practice)
 - [RunSettings](#runsettings)
 
 ## Usage
@@ -149,11 +150,16 @@ Add this folder to the PATH environment variable.
         ArtifactName: TestResults
     ```
 
-### Test Filter Cirteria  
+## Best Practice
 
-TcUnit.TestAdapter supports [filter criteria](https://github.com/Microsoft/vstest-docs/blob/master/docs/filter.md) 
 
-### RunSettings
+
+
+## Filter  
+
+TcUnit.TestAdapter supports [filter](https://github.com/Microsoft/vstest-docs/blob/master/docs/filter.md) 
+
+## RunSettings
 
 Use custom run settings
 ```

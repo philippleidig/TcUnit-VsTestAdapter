@@ -51,7 +51,7 @@ Add this folder to the PATH environment variable.
     vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:TcUnit.runsettings *\*.tsproj
     ```
 
-    ![twincat-deployment.png](/assets/images/twincat-deployment.png)
+    ![twincat-plc-deployment.png](/assets/images/twincat-plc-deployment.png)
 
     See [TwinCAT PLC Deployment](https://infosys.beckhoff.com/english.php?content=../content/1033/tc3_plc_intro/3260050187.html&id=1675861973834834662) for more information
 

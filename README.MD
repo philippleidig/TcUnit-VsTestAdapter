@@ -178,11 +178,3 @@ vstest.console.exe /Settings:path\to\TcUnit.runsettings
 </RunSettings>
 ```
 
-
-
-
-```
- cd "C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional\Common7\IDE\Extensions\TestPlatform"
- .\vstest.console.exe /TestAdapterPath:C:\Users\philipple\Desktop\TcUnit-VsTestAdapter\src\TcUnit.TestAdapter\bin\Release\netstandard2.0 /Settings:C:\Temp\TcUnit.runsettings C:\Temp\TcXaeProject\TcXaeProject\TcXaeProject.tsproj
-
-```

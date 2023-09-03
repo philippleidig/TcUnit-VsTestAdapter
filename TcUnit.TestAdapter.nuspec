@@ -26,6 +26,11 @@
   </metadata>
   <files>
     <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TcUnit.TestAdapter.dll" target="lib\netstandard2.0\TcUnit.TestAdapter.dll"/>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TwinCAT.Ads.dll" target="lib\netstandard2.0\TwinCAT.Ads.dll"/>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TwinCAT.Ads.Server.dll" target="lib\netstandard2.0\TwinCAT.Ads.Server.dll"/>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\TwinCAT.Ads.Abstractions.dll" target="lib\netstandard2.0\TwinCAT.Ads.Abstractions.dll"/>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\System.Reactive.dll" target="lib\netstandard2.0\System.Reactive.dll"/>
+    <file src="src\TcUnit.TestAdapter\bin\Release\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll" target="lib\netstandard2.0\Microsoft.Extensions.Logging.Abstractions.dll"/>
     <file src="assets\images\TcUnit.png" target="assets\images\TcUnit.png"/>
     <file src="README.md" target="README.md"/>
     <file src="LICENSE.md" target="LICENSE.md"/>

@@ -45,11 +45,19 @@ Add this folder to the PATH environment variable.
     nuget install TcUnit.TestAdapter
     ```
     
-4. You may now create a *.cmd / *.ps1 file, put it inside your TcUnit tests project and run it after compile
+4. List all available tests (optional)
 
     ```
-    vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:TcUnit.runsettings *\*.tsproj
+    vstest.console.exe /ListTests /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:path\to\TcUnit.runsettings *\*.tsproj
     ```
+
+5. Start test run and execute available tests
+
+    ```
+    vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:path\to\TcUnit.runsettings *\*.tsproj
+    ```
+
+6. You may now create a *.cmd / *.ps1 file, put it inside your TcUnit tests project and run it after compile
 
     ![twincat-plc-deployment.png](/assets/images/twincat-plc-deployment.png)
 

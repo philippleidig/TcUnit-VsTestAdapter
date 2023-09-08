@@ -167,6 +167,11 @@ Add this folder to the PATH environment variable.
 
 TcUnit.TestAdapter supports [filter](https://github.com/Microsoft/vstest-docs/blob/master/docs/filter.md) 
 
+e.g. only executes the specific test
+```
+vstest.console.exe /TestAdapterPath:C:\Tools\TcUnit.TestAdapter.1.0.0\lib\netstandard2.0 /Settings:path\to\TcUnit.runsettings *\*.tsproj /TestCaseFilter:"FullyQualifiedName=UnitTests.AxisGeneric_Tests.Should_Fail_When_AxisIdIsZero"
+```
+
 ## RunSettings
 
 Use custom run settings

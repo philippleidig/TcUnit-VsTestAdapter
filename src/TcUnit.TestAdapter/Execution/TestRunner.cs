@@ -1,4 +1,5 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,6 +12,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Common;
+using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
 using TwinCAT.Ads;
@@ -21,12 +23,13 @@ namespace TcUnit.TestAdapter.Execution
     {
         private readonly XUnitTestResultParser testResultParser = new XUnitTestResultParser();
 
-        public IEnumerable<TestCase> DiscoverTests(string source)
+        public IEnumerable<TestCase> DiscoverTests(string source, ITestCaseFilter testCaseFilter, IMessageLogger logger)
         {
-            return ListTestCasesInSource(source);
+            return ListTestCasesInSource(source)
+                .Where(t => testCaseFilter.MatchTestCase(t));
         }
 
-        public TestRun RunTests(string source, IEnumerable<TestCase> tests, TestSettings runSettings)
+        public TestRun RunTests(string source, IEnumerable<TestCase> tests, TestSettings runSettings, IMessageLogger logger)
         {
             var xaeProject = TwinCATXAEProject.Load(source);
 
@@ -54,26 +57,31 @@ namespace TcUnit.TestAdapter.Execution
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
+            targetRuntime.SwitchToConfigMode();
+
             targetRuntime.DownloadProject(xaeProject, cleanUpBeforeTestRun);
 
             targetRuntime.SwitchToRunMode();
 
             var isTestRunFinished = false;
-
+            
             while(!isTestRunFinished)
             {
                 isTestRunFinished = targetRuntime.IsTestRunFinished();
                 Thread.Sleep(500);
             }
 
-            Thread.Sleep(2000);
+            Thread.Sleep(1000);
 
             targetRuntime.UploadTestRunResults(@"C:\Temp\tcunit_testresults.xml");
             var testResults = testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
 
-            targetRuntime.SwitchToConfigMode();
-            targetRuntime.CleanUpBootFolder();
-
+            if(cleanUpAfterTestRun)
+            {
+                targetRuntime.SwitchToConfigMode();
+                targetRuntime.CleanUpBootFolder();
+            }
+            
             stopWatch.Stop();
 
             var testRunDuration = stopWatch.Elapsed;
@@ -83,9 +91,9 @@ namespace TcUnit.TestAdapter.Execution
             foreach (var test in tests)
             {
                 var testResult = new TestResult(test);
-
+            
                 var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
-
+            
                 if (result != null)
                 {
                     testResult.Outcome = result.Outcome;
@@ -96,7 +104,7 @@ namespace TcUnit.TestAdapter.Execution
                 {
                     testResult.Outcome = TestOutcome.Skipped;
                 }
-
+            
                 testRunResults.Add(testResult);
             }
 
@@ -150,9 +158,8 @@ namespace TcUnit.TestAdapter.Execution
 
         private IEnumerable<FunctionBlock_POU> GetUnitTestsFromProjectFile(PlcProject plcProject)
         {
-            // TODO - get unit tests by base class?! or better use a attribute pragma?
-
-            var unitTests = plcProject.FunctionBlocks; //.Where(pou => pou.Extends == "TcUnit.FB_TestSuite");
+            var unitTests = plcProject.FunctionBlocks
+                .Where(pou => pou.Extends == TestAdapter.TestSuiteBaseClass);
 
             foreach (var unitTest in unitTests)
             {

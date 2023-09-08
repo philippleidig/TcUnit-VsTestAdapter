@@ -14,6 +14,8 @@ namespace TcUnit.TestAdapter
 
         public const string RunSettingsName = "TcUnit";
 
+        public const string TestSuiteBaseClass = "TcUnit.FB_TestSuite";
+
         public const string DefaultTargetRuntime = "127.0.0.1.1.1";
         public const string DefaultTargetPort = "851";
 

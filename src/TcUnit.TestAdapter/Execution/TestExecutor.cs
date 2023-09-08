@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using TcUnit.TestAdapter.Abstractions;
+using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Execution;
 using TcUnit.TestAdapter.RunSettings;
 using static System.Net.Mime.MediaTypeNames;
@@ -58,17 +59,19 @@ namespace TcUnit.TestAdapter
             {
                 var settingsProvider = runContext.RunSettings?.GetSettings(TestAdapter.RunSettingsName) as RunSettingsProvider;
                 var settings = settingsProvider != null ? settingsProvider.Settings : new TestSettings();
- 
-                var source = sources.First();
 
-                var tests = testRunner.DiscoverTests(source);
+                var testCaseFilter = new TestCaseFilter(runContext);
+
+                var source = sources.First();
+                var tests = testRunner.DiscoverTests(source, testCaseFilter, frameworkHandle);
+
 
                 if(!tests.Any())
                 {
                     throw new ArgumentOutOfRangeException("Source does not contain any test case.");
                 }
 
-                var testRun = testRunner.RunTests(source, tests, settings);
+                var testRun = testRunner.RunTests(source, tests, settings, frameworkHandle as IMessageLogger);
 
                 PrintRunConditions(frameworkHandle, testRun.Conditions);
 

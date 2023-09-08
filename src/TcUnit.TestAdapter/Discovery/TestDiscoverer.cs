@@ -44,7 +44,9 @@ namespace TcUnit.TestAdapter.Discovery
                 //var settingsProvider = discoveryContext.RunSettings.GetSettings(TestAdapter.RunSettingsName) as RunSettingsProvider;
                 //var settings = settingsProvider != null ? settingsProvider.Settings : new TestSettings();
 
-                var testCases = testRunner.DiscoverTests(sources.First());
+                var testCaseFilter = new TestCaseFilter(discoveryContext);
+
+                var testCases = testRunner.DiscoverTests(sources.First(), testCaseFilter, logger);
 
                 foreach (var testCase in testCases)
                 {

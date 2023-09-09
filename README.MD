@@ -186,7 +186,7 @@ vstest.console.exe /Settings:path\to\TcUnit.runsettings
 <RunSettings>
     <TcUnit>
         <Target>127.0.0.1.1.1</Target> 
-        <Port>851</Port>
+        <CleanUpAfterTestRun>true</CleanUpAfterTestRun>
     </TcUnit>
 </RunSettings>
 ```

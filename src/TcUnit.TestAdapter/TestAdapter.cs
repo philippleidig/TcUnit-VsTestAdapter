@@ -1,4 +1,5 @@
 ﻿using System;
+using TcUnit.TestAdapter.RunSettings;
 
 namespace TcUnit.TestAdapter
 {
@@ -17,7 +18,8 @@ namespace TcUnit.TestAdapter
         public const string TestSuiteBaseClass = "TcUnit.FB_TestSuite";
 
         public const string DefaultTargetRuntime = "127.0.0.1.1.1";
-        public const string DefaultTargetPort = "851";
+        public const bool DefaultCleanUpAfterTestRun = true;
+
 
     }
 }

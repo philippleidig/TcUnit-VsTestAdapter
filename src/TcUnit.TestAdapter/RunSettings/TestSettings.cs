@@ -1,6 +1,7 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Xml.Serialization;
 
 namespace TcUnit.TestAdapter.RunSettings
 {
+    [XmlRoot(TestAdapter.RunSettingsName)]
     public class TestSettings : TestRunSettings
     {
         private static readonly XmlSerializer serializer = new XmlSerializer(typeof(TestSettings));
@@ -19,8 +21,11 @@ namespace TcUnit.TestAdapter.RunSettings
 
         }
 
-        public string Target;
-        public bool CleanUpAfterTestRun;
+        [DefaultValue(TestAdapter.DefaultTargetRuntime)]
+        public string Target { get; set; }
+
+        [DefaultValue(TestAdapter.DefaultCleanUpAfterTestRun)]
+        public bool CleanUpAfterTestRun { get; set; }
 
         public override XmlElement ToXml()
         {

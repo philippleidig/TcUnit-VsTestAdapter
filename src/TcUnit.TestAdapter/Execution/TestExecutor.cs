@@ -57,8 +57,7 @@ namespace TcUnit.TestAdapter
 
             try
             {
-                var settingsProvider = runContext.RunSettings?.GetSettings(TestAdapter.RunSettingsName) as RunSettingsProvider;
-                var settings = settingsProvider != null ? settingsProvider.Settings : new TestSettings();
+                var settings = runContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
 
                 var testCaseFilter = new TestCaseFilter(runContext);
 

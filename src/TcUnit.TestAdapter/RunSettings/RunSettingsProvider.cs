@@ -29,15 +29,7 @@ namespace TcUnit.TestAdapter.RunSettings
 
             if (reader.Read() && reader.Name.Equals(Name))
             {
-                var runSettings = XDocument.Load(reader);
-                var rootElement = runSettings.Element(TestAdapter.RunSettingsName);
-
-                Settings.Target = rootElement.Element("Target")?.Value ?? TestAdapter.DefaultTargetRuntime;
-
-                var cleanUpAfterRun = rootElement.Element("CleanUpAfterTestRun")?.Value;
-
-                if (!string.IsNullOrEmpty(cleanUpAfterRun))
-                Settings.CleanUpAfterTestRun = bool.Parse(cleanUpAfterRun);
+                Settings = serializer.Deserialize(reader) as TestSettings;
             }
         }
     }

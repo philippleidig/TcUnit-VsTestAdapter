@@ -16,6 +16,7 @@ using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
 using TwinCAT.Ads;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter.Execution
 {
@@ -57,56 +58,22 @@ namespace TcUnit.TestAdapter.Execution
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            targetRuntime.SwitchToConfigMode();
+            PrepareTargetForTestRun(targetRuntime, xaeProject, cleanUpBeforeTestRun);
 
-            targetRuntime.DownloadProject(xaeProject, cleanUpBeforeTestRun);
+            PerformTestRunOnTarget(targetRuntime);
 
-            targetRuntime.SwitchToRunMode();
+            var testResults = CollectTestRunResultsFromTarget(targetRuntime);
 
-            var isTestRunFinished = false;
-            
-            while(!isTestRunFinished)
+            if (cleanUpAfterTestRun)
             {
-                isTestRunFinished = targetRuntime.IsTestRunFinished();
-                Thread.Sleep(500);
-            }
-
-            Thread.Sleep(1000);
-
-            targetRuntime.UploadTestRunResults(@"C:\Temp\tcunit_testresults.xml");
-            var testResults = testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
-
-            if(cleanUpAfterTestRun)
-            {
-                targetRuntime.SwitchToConfigMode();
-                targetRuntime.CleanUpBootFolder();
+                CleanUpTargetAfterTestRun(targetRuntime);
             }
             
             stopWatch.Stop();
 
             var testRunDuration = stopWatch.Elapsed;
 
-            var testRunResults = new List<TestResult>();
-
-            foreach (var test in tests)
-            {
-                var testResult = new TestResult(test);
-            
-                var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
-            
-                if (result != null)
-                {
-                    testResult.Outcome = result.Outcome;
-                    testResult.Duration = result.Duration;
-                    testResult.ErrorMessage = result.ErrorMessage;
-                }
-                else
-                {
-                    testResult.Outcome = TestOutcome.Skipped;
-                }
-            
-                testRunResults.Add(testResult);
-            }
+            var testRunResults = PopulateTestRunResults(tests, testResults);
 
 
             var testRun = new TestRun
@@ -124,6 +91,71 @@ namespace TcUnit.TestAdapter.Execution
 
             return testRun;
         }
+
+        private void PrepareTargetForTestRun (TargetRuntime target, TwinCATXAEProject project, bool cleanUpBeforeTestRun)
+        {
+            target.SwitchToConfigMode();
+            target.DownloadProject(project, cleanUpBeforeTestRun);
+        }
+
+
+        private IEnumerable<TestResult> PopulateTestRunResults (IEnumerable<TestCase> testCases, IEnumerable<TestCaseResult> testResults)
+        {
+            var testRunResults = new List<TestResult>();
+
+            foreach (var test in testCases)
+            {
+                var testResult = new TestResult(test);
+
+                var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
+
+                if (result != null)
+                {
+                    testResult.Outcome = result.Outcome;
+                    testResult.Duration = result.Duration;
+                    testResult.ErrorMessage = result.ErrorMessage;
+                }
+                else
+                {
+                    testResult.Outcome = TestOutcome.Skipped;
+                }
+
+                testRunResults.Add(testResult);
+            }
+
+            return testRunResults;
+        }
+        private void CleanUpTargetAfterTestRun (TargetRuntime target)
+        {
+            target.SwitchToConfigMode();
+            target.CleanUpBootFolder();
+        }
+
+        private void PerformTestRunOnTarget(TargetRuntime target)
+        {
+            var testRunTimeout = new Stopwatch();
+            testRunTimeout.Start();
+
+            target.SwitchToRunMode();
+
+            var isTestRunFinished = false;
+
+            while (!isTestRunFinished || ( testRunTimeout.ElapsedMilliseconds < 30000 ))
+            {
+                isTestRunFinished = target.IsTestRunFinished();
+                Thread.Sleep(500);
+            }
+
+            Thread.Sleep(1000);
+        }
+
+        private IEnumerable<TestCaseResult> CollectTestRunResultsFromTarget (TargetRuntime target)
+        {
+            target.UploadTestRunResults(@"C:\Temp\tcunit_testresults.xml");
+            return testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
+        }
+
+
         private IEnumerable<TestCase> ListTestCasesInSource(string source)
         {
             var tests = new List<TestCase>();

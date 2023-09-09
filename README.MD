@@ -181,13 +181,21 @@ vstest.console.exe /Settings:path\to\TcUnit.runsettings
 
 [.runsettings file](https://docs.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file) is used to pass parameters to the test run.
 
+see [docs](https://learn.microsoft.com/en-us/visualstudio/test/configure-unit-tests-by-using-a-dot-runsettings-file?view=vs-2022) for detailed information
+
+
 ```xml
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
+    <RunConfiguration>
+        <!-- Specify timeout in milliseconds. A valid value should be greater than 0 -->
+        <TestSessionTimeout>20000</TestSessionTimeout>
+    </RunConfiguration>
     <TcUnit>
         <Target>127.0.0.1.1.1</Target> 
         <CleanUpAfterTestRun>true</CleanUpAfterTestRun>
     </TcUnit>
 </RunSettings>
 ```
+
 

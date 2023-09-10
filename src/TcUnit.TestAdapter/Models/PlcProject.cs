@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Reflection.Metadata;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter.Models
 {
@@ -15,6 +18,8 @@ namespace TcUnit.TestAdapter.Models
         public string Name { get; set; }
 
         public List<FunctionBlock_POU> FunctionBlocks { get; set; } = new List<FunctionBlock_POU>();
+
+        public List<PlcLibraryReference> References { get; set; } = new List<PlcLibraryReference> { };
 
         private PlcProject(string plcProjectFile)
         {
@@ -39,17 +44,23 @@ namespace TcUnit.TestAdapter.Models
             }
 
             return new PlcProject(plcProjectFile);
-        } 
+        }
+
+        public static XNamespace XmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
         private void ParsePOUs ()
         {
-            XmlDocument doc = new XmlDocument();
-            doc.Load(CompletePathInFileSystem);
-            XmlNodeList nodes = doc.GetElementsByTagName("Compile");
+            var doc = XDocument.Load(CompletePathInFileSystem);
 
-            foreach (XmlNode node in nodes)
+
+
+            var nodes = doc.Elements(XmlNamespace + "Project")
+                            .Elements(XmlNamespace + "ItemGroup")
+                            .Elements(XmlNamespace + "Compile");
+
+            foreach (var node in nodes)
             {
-                var relativePath = node.Attributes["Include"].Value;
+                var relativePath = node.Attribute("Include")?.Value;
                 if (relativePath.Contains(".TcPOU"))
                 {
                     var pouFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
@@ -60,6 +71,37 @@ namespace TcUnit.TestAdapter.Models
                         FunctionBlocks.Add(functionBlock);
                     }
                 }
+            }
+
+            var plcReferences = doc.Elements(XmlNamespace + "Project")
+                                            .Elements(XmlNamespace + "ItemGroup")
+                                            .Elements(XmlNamespace + "PlaceholderReference");
+
+            foreach (var plcLibrary in plcReferences)
+            {
+                var name = plcLibrary.Attribute("Include")?.Value;
+
+                var reference = new PlcLibraryReference
+                {
+                    Name = name,
+                };
+
+                var parameters = plcLibrary.Element(XmlNamespace + "Parameters");
+
+                if (parameters == null)
+                {
+                    continue;
+                }
+
+                foreach (var parameter in parameters.Elements(XmlNamespace + "Parameter"))
+                {
+                    var key = parameter.Element(XmlNamespace + "Key")?.Value;
+                    var value = parameter.Element(XmlNamespace + "Value")?.Value;
+               
+                    reference.Parameters.Add(key, value);
+                }
+           
+                References.Add(reference);
             }
         }
     }

@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Execution;
+using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -58,19 +59,19 @@ namespace TcUnit.TestAdapter
             try
             {
                 var settings = runContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
-
                 var testCaseFilter = new TestCaseFilter(runContext);
 
-                var source = sources.First();
-                var tests = testRunner.DiscoverTests(source, testCaseFilter, frameworkHandle);
+                var project = TwinCATXAEProject.Load(sources.First());
 
+                var tests = testRunner.DiscoverTests(project, frameworkHandle)
+                                            .Where(t => testCaseFilter.MatchTestCase(t));
 
-                if(!tests.Any())
+                if (!tests.Any())
                 {
                     throw new ArgumentOutOfRangeException("Source does not contain any test case.");
                 }
 
-                var testRun = testRunner.RunTests(source, tests, settings, frameworkHandle as IMessageLogger);
+                var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle as IMessageLogger);
 
                 PrintRunConditions(frameworkHandle, testRun.Conditions);
 

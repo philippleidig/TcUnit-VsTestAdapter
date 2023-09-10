@@ -24,25 +24,55 @@ namespace TcUnit.TestAdapter.Execution
     {
         private readonly XUnitTestResultParser testResultParser = new XUnitTestResultParser();
 
-        public IEnumerable<TestCase> DiscoverTests(string source, ITestCaseFilter testCaseFilter, IMessageLogger logger)
+        public IEnumerable<TestCase> DiscoverTests(TwinCATXAEProject project, IMessageLogger logger)
         {
-            return ListTestCasesInSource(source)
-                .Where(t => testCaseFilter.MatchTestCase(t));
+            var tests = new List<TestCase>();
+
+            foreach (var plcProject in project.PlcProjects)
+            {
+                if(!IsPlcProjectSuitableForTestRun(plcProject))
+                {
+                    logger.SendMessage(TestMessageLevel.Informational, "Found non suitable PLC project");
+                    continue;
+                }
+
+                // find possible test suites and test cases
+                var testCases = plcProject.FunctionBlocks
+                        .Where(pou => pou.Extends == TestAdapter.TestSuiteBaseClass);
+
+                foreach (var pou in testCases)
+                {
+                    var testSuite = TestSuite.ParseFromFunctionBlock(pou);
+
+                    foreach (var testMethod in testSuite.Tests)
+                    {
+                        var testName = plcProject.Name + "." + testMethod.Name;
+
+                        var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
+                        test.LineNumber = 0;
+                        test.CodeFilePath = pou.FilePath;
+                        test.DisplayName = testName;
+
+                        tests.Add(test);
+                    }
+                }
+            }
+
+            return tests;
         }
 
-        public TestRun RunTests(string source, IEnumerable<TestCase> tests, TestSettings runSettings, IMessageLogger logger)
+        public TestRun RunTests(TwinCATXAEProject project, IEnumerable<TestCase> tests, TestSettings runSettings, IMessageLogger logger)
         {
-            var xaeProject = TwinCATXAEProject.Load(source);
 
-            if(!xaeProject.IsProjectPreBuild)
+            if(!project.IsProjectPreBuild)
             {
                 throw new Exception("TwinCAT XAE project is not pre build.");
             }
 
-            //if (!xaeProject.IsPlcProjectIncluded)
-            //{
-            //    throw new Exception("TwinCAT XAE project doas not contain at least one PLC projects.");
-            //}
+            if (!project.IsPlcProjectIncluded)
+            {
+                throw new Exception("TwinCAT XAE project doas not contain at least one PLC projects.");
+            }
 
             var target = runSettings.Target;
             var cleanUpAfterTestRun = runSettings.CleanUpAfterTestRun;
@@ -58,7 +88,7 @@ namespace TcUnit.TestAdapter.Execution
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            PrepareTargetForTestRun(targetRuntime, xaeProject, cleanUpBeforeTestRun);
+            PrepareTargetForTestRun(targetRuntime, project, cleanUpBeforeTestRun);
 
             PerformTestRunOnTarget(targetRuntime);
 
@@ -90,6 +120,56 @@ namespace TcUnit.TestAdapter.Execution
             };   
 
             return testRun;
+        }
+
+        private bool IsPlcProjectSuitableForTestRun (PlcProject project)
+        {
+            var tcUnitLibraryReference = project.References.Where(r => r.Name == "TcUnit");
+
+            if (!tcUnitLibraryReference.Any())
+            {
+                return false;
+            }
+
+            var library = tcUnitLibraryReference.FirstOrDefault();
+
+            var xUnitEnablePublish = "";
+
+            if (!library.Parameters.TryGetValue("XUNITENABLEPUBLISH", out xUnitEnablePublish))
+            {
+                return false;
+            }
+
+            if(string.IsNullOrEmpty(xUnitEnablePublish) || !xUnitEnablePublish.Equals("TRUE"))
+            {
+                return false;
+            }
+
+            var xUnitFilePath = "";
+
+            if (!library.Parameters.TryGetValue("XUNITFILEPATH", out xUnitFilePath))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(xUnitFilePath) )
+            {
+                return false;
+            }
+
+            var useDataTypeAsTestNames = "";
+
+            if (!library.Parameters.TryGetValue("USEDATATYPESASTESTNAMES", out useDataTypeAsTestNames))
+            {
+                return false;
+            }
+
+            if (string.IsNullOrEmpty(useDataTypeAsTestNames) || !useDataTypeAsTestNames.Equals("TRUE"))
+            {
+                return false;
+            }
+
+            return true;
         }
 
         private void PrepareTargetForTestRun (TargetRuntime target, TwinCATXAEProject project, bool cleanUpBeforeTestRun)
@@ -133,86 +213,21 @@ namespace TcUnit.TestAdapter.Execution
 
         private void PerformTestRunOnTarget(TargetRuntime target)
         {
-            var testRunTimeout = new Stopwatch();
-            testRunTimeout.Start();
-
             target.SwitchToRunMode();
 
             var isTestRunFinished = false;
 
-            while (!isTestRunFinished || ( testRunTimeout.ElapsedMilliseconds < 30000 ))
+            while (!isTestRunFinished)
             {
                 isTestRunFinished = target.IsTestRunFinished();
                 Thread.Sleep(500);
             }
-
-            Thread.Sleep(1000);
         }
 
         private IEnumerable<TestCaseResult> CollectTestRunResultsFromTarget (TargetRuntime target)
         {
             target.UploadTestRunResults(@"C:\Temp\tcunit_testresults.xml");
             return testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
-        }
-
-
-        private IEnumerable<TestCase> ListTestCasesInSource(string source)
-        {
-            var tests = new List<TestCase>();
-
-            var projectFolder = Path.GetDirectoryName(source);
-            var plcProjectFiles = Directory.GetFiles(projectFolder, "*.plcproj", SearchOption.AllDirectories);
-
-            foreach(var projectFile in plcProjectFiles)
-            {
-                var plcProject = PlcProject.ParseFromProjectFile(projectFile);
-
-                foreach (var pou in GetUnitTestsFromProjectFile(plcProject))
-                {
-                    var testSuite = TestSuite.ParseFromFunctionBlock(pou);
-
-                    foreach (var testMethod in testSuite.Tests)
-                    {
-                        var testName = plcProject.Name + "." + testMethod.Name;
-
-                        var test = new TestCase(testName, TestAdapter.ExecutorUri, source);
-                        test.LineNumber = 0;
-                        test.CodeFilePath = pou.FilePath;
-                        test.DisplayName = testName;
-
-                        tests.Add(test);
-                    }
-                }
-            }
-
-            return tests;
-        }
-
-        private IEnumerable<FunctionBlock_POU> GetUnitTestsFromProjectFile(PlcProject plcProject)
-        {
-            var unitTests = plcProject.FunctionBlocks
-                .Where(pou => pou.Extends == TestAdapter.TestSuiteBaseClass);
-
-            foreach (var unitTest in unitTests)
-            {
-                if (!IsUnitTestExcluded(unitTest, ""))
-                {
-                    yield return unitTest;
-                }
-            }
-        }
-
-        private bool IsUnitTestExcluded(FunctionBlock_POU pou, string excludeFilter)
-        {
-            if (excludeFilter == null || excludeFilter == "")
-                return false;
-
-            if (Regex.IsMatch(pou.Name, excludeFilter))
-            {
-                return true;
-            }
-            // {attribute 'TcUnit.Exclude'}
-            return false;
         }
     }
 }

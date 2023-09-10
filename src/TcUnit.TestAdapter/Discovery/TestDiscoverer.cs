@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Execution;
+using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
 
 namespace TcUnit.TestAdapter.Discovery
@@ -41,11 +42,13 @@ namespace TcUnit.TestAdapter.Discovery
 
             try
             {
-                //var settings = runContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
-
+                var settings = discoveryContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
                 var testCaseFilter = new TestCaseFilter(discoveryContext);
 
-                var testCases = testRunner.DiscoverTests(sources.First(), testCaseFilter, logger);
+                var project = TwinCATXAEProject.Load(sources.First());
+
+                var testCases = testRunner.DiscoverTests(project, logger)
+                                            .Where(t => testCaseFilter.MatchTestCase(t));
 
                 foreach (var testCase in testCases)
                 {

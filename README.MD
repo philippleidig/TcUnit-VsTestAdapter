@@ -124,7 +124,7 @@ Add this folder to the PATH environment variable.
       displayName: 'VsTest - Run TcUnit Tests'
       inputs:
         testAssemblyVer2: |
-         $(Build.Repository.LocalPath)\Tests\*.plcproj
+         $(Build.Repository.LocalPath)\SolutionFolder\ProjectFolder\*.tsproj
         runSettingsFile: '$(System.DefaultWorkingDirectory)\.ci\TcUnit.runsettings'
         pathtoCustomTestAdapters: '$(Build.Repository.LocalPath)\TcUnit.TestAdapter.$(TcUnitTestAdapterVersion)\lib\netstandard2.0'
         platform: '$(BuildPlatform)'
@@ -135,14 +135,6 @@ Add this folder to the PATH environment variable.
     
     ```
     $(Build.Repository.LocalPath)\TcUnit.TestAdapter.$(TcUnitTestAdapterVersion)\lib\netstandard2.0
-    ```
-    
-    Specify patterns to search for `*.plcproj` files in the **test files** section (`testAssemblyVer2` in YAML).
-    
-    If you added Visual Studio Test Platform Installer task on the previous step do not forget to set `vsTestVersion` in YAML (or Test platform version in Classic UI):
-    
-    ```
-    vsTestVersion: toolsInstaller
     ```
     
 6. To publish test results (for later review and downloading) use [Publish Build Artifacts](https://docs.microsoft.com/en-us/azure/devops/pipelines/tasks/utility/publish-build-artifacts?view=azure-devops) task. Execution results are copied to `$(Agent.TempDirectory)\TestResults`.

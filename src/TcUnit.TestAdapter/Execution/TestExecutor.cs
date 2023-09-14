@@ -65,16 +65,16 @@ namespace TcUnit.TestAdapter
 
                 var tests = testRunner.DiscoverTests(project, frameworkHandle)
                                             .Where(t => testCaseFilter.MatchTestCase(t));
-
+               
                 if (!tests.Any())
                 {
                     throw new ArgumentOutOfRangeException("Source does not contain any test case.");
                 }
-
+               
                 var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle as IMessageLogger);
-
+               
                 PrintRunConditions(frameworkHandle, testRun.Conditions);
-
+               
                 foreach(var testResult in testRun.Results)
                 {
                     frameworkHandle.RecordResult(testResult);

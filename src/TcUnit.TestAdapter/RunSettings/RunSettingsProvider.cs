@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
+using System;
 using System.ComponentModel.Composition;
 using System.Xml;
 using System.Xml.Linq;

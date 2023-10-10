@@ -16,14 +16,20 @@ namespace TcUnit.TestAdapter.Execution
                 throw new FileNotFoundException();
             }
 
-            return ParseTestResults(filePath);
+            FileStream fs = File.OpenRead(filePath);
+            return Parse(fs);
         }
 
-        private IEnumerable<TestCaseResult> ParseTestResults(string filePath)
+        public IEnumerable<TestCaseResult> Parse(Stream stream)
+        {
+            return ParseTestResults(stream);
+        }
+
+        private IEnumerable<TestCaseResult> ParseTestResults(Stream stream)
         {
             var testCaseResults = new List<TestCaseResult>();
 
-            XDocument testResults = XDocument.Load(filePath);
+            XDocument testResults = XDocument.Load(stream);
 
             foreach (XElement testSuite in testResults.Elements("testsuites").Elements("testsuite"))
             {

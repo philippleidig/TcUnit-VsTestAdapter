@@ -231,11 +231,16 @@ namespace TcUnit.TestAdapter.Models
             return UploadFile(localFile, remoteFile, AdsDirectory.PATH_BOOTPATH);
         }
 
-        public bool UploadFile(string localFile, string remoteFile, AdsDirectory standardDirectory = AdsDirectory.PATH_GENERIC)
+        public bool UploadFileFromBootFolder(Stream stream, string remoteFile)
+        {
+            return UploadFile(stream, remoteFile, AdsDirectory.PATH_BOOTPATH);
+        }
+
+        private bool UploadFile(Stream stream, string remoteFile, AdsDirectory standardDirectory = AdsDirectory.PATH_GENERIC)
         {
             AdsFileSystem ctrl = new AdsFileSystem();
 
-            if (!ctrl.Connect(target, (int)TwinCAT.Ads.AmsPort.SystemService))
+            if (!ctrl.Connect(target, (int)AmsPort.SystemService))
                 return false;
 
             ushort handle = ctrl.OpenFile(remoteFile, standardDirectory, (UInt32)AdsFileOpenMode.FOPEN_MODEREAD | (UInt32)AdsFileOpenMode.FOPEN_MODEBINARY);
@@ -243,8 +248,6 @@ namespace TcUnit.TestAdapter.Models
             if (handle <= 0)
                 return false;
 
-            FileStream fs = File.OpenWrite(localFile);
-            BinaryWriter bw = new BinaryWriter(fs, System.Text.Encoding.Default);
             long totalSize = 0;
             bool eof = false;
             do
@@ -252,17 +255,25 @@ namespace TcUnit.TestAdapter.Models
                 byte[] buffer = ctrl.ReadFile(handle, (uint)DefaultChunkSize, out eof);
                 if (buffer != null)
                 {
-                    bw.Write(buffer, 0, buffer.Length);
+                    stream.Write(buffer, 0, buffer.Length);
+                    stream.Flush();
                     totalSize += buffer.Length;
                 }
             }
             while (!eof);
 
+            stream.Seek(0L, SeekOrigin.Begin);
+            stream.Flush();
+
             ctrl.CloseFile(handle);
-            fs.Flush(true);
-            fs.Close();
 
             return true;
+        }
+
+        public bool UploadFile(string localFile, string remoteFile, AdsDirectory standardDirectory = AdsDirectory.PATH_GENERIC)
+        {
+            FileStream fs = File.OpenWrite(localFile);
+            return UploadFile(fs, remoteFile, standardDirectory);
         }
 
         public bool CleanUpBootDirectory(string osName)

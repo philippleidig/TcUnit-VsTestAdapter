@@ -156,9 +156,9 @@ namespace TcUnit.TestAdapter.Models
             systemService.CleanUpBootDirectory(Info.ImageOsName);
         }
 
-        public void UploadTestRunResults(string filePath)
+        public void UploadTestRunResults(Stream stream)
         {
-            systemService.UploadFileFromBootFolder(filePath, TestAdapter.TestResultPath);
+            systemService.UploadFileFromBootFolder(stream, TestAdapter.TestResultPath);
         }
 
         public bool IsTestRunFinished()

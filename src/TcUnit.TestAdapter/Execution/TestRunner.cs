@@ -226,8 +226,11 @@ namespace TcUnit.TestAdapter.Execution
 
         private IEnumerable<TestCaseResult> CollectTestRunResultsFromTarget (TargetRuntime target)
         {
-            target.UploadTestRunResults(@"C:\Temp\tcunit_testresults.xml");
-            return testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
+            using(MemoryStream  ms = new MemoryStream())
+            {
+                target.UploadTestRunResults(ms);
+                return testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
+            }
         }
     }
 }

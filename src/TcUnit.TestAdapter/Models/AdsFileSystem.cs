@@ -51,23 +51,28 @@ namespace TcUnit.TestAdapter.Models
             bool ret = false;
 
             byte[] readData = new byte[0];
-
             byte[] writeData = new byte[path.Length + 1];
-            MemoryStream writeStream = new MemoryStream(writeData);
-            BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII);
-            writer.Write(path.ToCharArray());
-            writer.Write('\0');
 
-            try
+            using (MemoryStream writeStream = new MemoryStream(writeData))
             {
-                adsClient.ReadWrite((uint)AdsIndexGroup.SYSTEMSERVICE_MKDIR, (uint)directory, readData.AsMemory(), writeData.AsMemory());
-                ret = true;
+                using (BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII)) 
+                {
+                    writer.Write(path.ToCharArray());
+                    writer.Write('\0');
+
+                    try
+                    {
+                        adsClient.ReadWrite((uint)AdsIndexGroup.SYSTEMSERVICE_MKDIR, (uint)directory, readData.AsMemory(), writeData.AsMemory());
+                        ret = true;
+                    }
+                    catch (AdsErrorException)
+                    {
+                        ret = false;
+                    }
+                    return ret;
+
+                }
             }
-            catch (AdsErrorException)
-            {
-                ret = false;
-            }
-            return ret;
         }
 
 
@@ -79,23 +84,27 @@ namespace TcUnit.TestAdapter.Models
             bool ret = false;
 
             byte[] readData = new byte[0];
-
             byte[] writeData = new byte[path.Length + 1];
-            MemoryStream writeStream = new MemoryStream(writeData);
-            BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII);
-            writer.Write(path.ToCharArray());
-            writer.Write('\0');
 
-            try
+            using (MemoryStream writeStream = new MemoryStream(writeData))
             {
-                var value = adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_RMDIR, (uint)directory, readData.AsMemory(), writeData.AsMemory());
-                ret = true;
+                using (BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII))
+                {
+                    writer.Write(path.ToCharArray());
+                    writer.Write('\0');
+
+                    try
+                    {
+                        var value = adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_RMDIR, (uint)directory, readData.AsMemory(), writeData.AsMemory());
+                        ret = true;
+                    }
+                    catch (AdsErrorException)
+                    {
+                        ret = false;
+                    }
+                    return ret;
+                }
             }
-            catch (AdsErrorException)
-            {
-                ret = false;
-            }
-            return ret;
         }
 
 
@@ -129,23 +138,27 @@ namespace TcUnit.TestAdapter.Models
             bool ret = false;
 
             byte[] readData = new byte[0];
-
             byte[] writeData = new byte[path.Length + 1];
-            MemoryStream writeStream = new MemoryStream(writeData);
-            BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII);
-            writer.Write(path.ToCharArray());
-            writer.Write('\0');
 
-            try
+            using (MemoryStream writeStream = new MemoryStream(writeData))
             {
-                adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FDELETE, (uint)directory << 16, readData.AsMemory(), writeData.AsMemory());
-                ret = true;
+                using (BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII))
+                {
+                    writer.Write(path.ToCharArray());
+                    writer.Write('\0');
+
+                    try
+                    {
+                        adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FDELETE, (uint)directory << 16, readData.AsMemory(), writeData.AsMemory());
+                        ret = true;
+                    }
+                    catch (AdsErrorException)
+                    {
+                        ret = false;
+                    }
+                    return ret;
+                }
             }
-            catch (AdsErrorException)
-            {
-                ret = false;
-            }
-            return ret;
         }
 
         public ushort OpenFile(string path, AdsDirectory directory, uint mode)
@@ -157,32 +170,40 @@ namespace TcUnit.TestAdapter.Models
             int numReadBytes = 0;
 
             byte[] readData = new byte[sizeof(uint)];
-
             byte[] writeData = new byte[path.Length + 1];
-            MemoryStream writeStream = new MemoryStream(writeData);
-            BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII);
-            writer.Write(path.ToCharArray());
-            writer.Write('\0');
 
-            try
+            using (MemoryStream writeStream = new MemoryStream(writeData))
             {
-                numReadBytes = adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FOPEN, (uint)directory << 16 | mode, readData.AsMemory(), writeData.AsMemory());
-                if (numReadBytes >= sizeof(uint))
+                using (BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII))
                 {
-                    MemoryStream readStream = new MemoryStream(readData);
-                    BinaryReader reader = new BinaryReader(readStream, Encoding.Default);
-                    ret = (ushort)reader.ReadUInt32();
-                }
-                else
-                {
-                    ret = 0;
+                    writer.Write(path.ToCharArray());
+                    writer.Write('\0');
+
+                    try
+                    {
+                        numReadBytes = adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FOPEN, (uint)directory << 16 | mode, readData.AsMemory(), writeData.AsMemory());
+                        if (numReadBytes >= sizeof(uint))
+                        {
+                            using (MemoryStream readStream = new MemoryStream(readData))
+                            {
+                                using (BinaryReader reader = new BinaryReader(readStream, Encoding.Default))
+                                {
+                                    ret = (ushort)reader.ReadUInt32();
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ret = 0;
+                        }
+                    }
+                    catch (AdsErrorException)
+                    {
+                        ret = 0;
+                    }
+                    return ret;
                 }
             }
-            catch (AdsErrorException)
-            {
-                ret = 0;
-            }
-            return ret;
         }
 
         public byte[] ReadFile(ushort fileHandle, uint readLength, out bool isEndOfFile)
@@ -198,7 +219,6 @@ namespace TcUnit.TestAdapter.Models
             int numReadBytes = 0;
 
             byte[] readData = new byte[readLength];
-
             byte[] writeData = new byte[0];
 
             try
@@ -206,9 +226,13 @@ namespace TcUnit.TestAdapter.Models
                 numReadBytes = adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FREAD, fileHandle, readData.AsMemory(), writeData.AsMemory());
                 if (numReadBytes > 0)
                 {
-                    MemoryStream readStream = new MemoryStream(readData);
-                    BinaryReader reader = new BinaryReader(readStream, Encoding.Default);
-                    ret = reader.ReadBytes(numReadBytes);
+                    using (MemoryStream readStream = new MemoryStream(readData))
+                    {
+                        using (BinaryReader reader = new BinaryReader(readStream, Encoding.Default))
+                        {
+                            ret = reader.ReadBytes(numReadBytes);
+                        }
+                    }
                 }
                 else
                 {
@@ -239,30 +263,35 @@ namespace TcUnit.TestAdapter.Models
             byte[] readData = new byte[0];
 
             byte[] writeData = new byte[oldName.Length + 1 + newName.Length + 1];
-            MemoryStream writeStream = new MemoryStream(writeData);
-            BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII);
-            writer.Write(oldName.ToCharArray());
-            writer.Write('\0');
-            writer.Write(newName.ToCharArray());
-            writer.Write('\0');
 
-            try
+            using (MemoryStream writeStream = new MemoryStream(writeData))
             {
-                if (oldName.Length + 1 + newName.Length + 1 <= 255)
+                using (BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII))
                 {
-                    adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FRENAME, (uint)directory << 16, readData.AsMemory(), writeData.AsMemory());
-                    ret = true;
-                }
-                else
-                {
-                    ret = false;
+                    writer.Write(oldName.ToCharArray());
+                    writer.Write('\0');
+                    writer.Write(newName.ToCharArray());
+                    writer.Write('\0');
+
+                    try
+                    {
+                        if (oldName.Length + 1 + newName.Length + 1 <= 255)
+                        {
+                            adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FRENAME, (uint)directory << 16, readData.AsMemory(), writeData.AsMemory());
+                            ret = true;
+                        }
+                        else
+                        {
+                            ret = false;
+                        }
+                    }
+                    catch (AdsErrorException)
+                    {
+                        ret = false;
+                    }
+                    return ret;
                 }
             }
-            catch (AdsErrorException)
-            {
-                ret = false;
-            }
-            return ret;
         }
 
         public bool WriteFile(ushort fileHandle, byte[] writeBuffer, uint writeLength)
@@ -321,12 +350,17 @@ namespace TcUnit.TestAdapter.Models
                     if (command == AdsFileSystemCommandType.eEnumCmd_First)
                     {
                         byte[] writeData = new byte[path.Length + 1];
-                        MemoryStream writeStream = new MemoryStream(writeData);
-                        BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII);
-                        writer.Write(path.ToCharArray());
-                        writer.Write('\0');
 
-                        adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FFILEFIND, (int)AdsDirectory.PATH_GENERIC, readData.AsMemory(), writeData.AsMemory());
+                        using (MemoryStream writeStream = new MemoryStream(writeData))
+                        {
+                            using (BinaryWriter writer = new BinaryWriter(writeStream, Encoding.ASCII))
+                            {
+                                writer.Write(path.ToCharArray());
+                                writer.Write('\0');
+
+                                adsClient.ReadWrite((int)AdsIndexGroup.SYSTEMSERVICE_FFILEFIND, (int)AdsDirectory.PATH_GENERIC, readData.AsMemory(), writeData.AsMemory());
+                            }
+                        }
                     }
                     else
                     {

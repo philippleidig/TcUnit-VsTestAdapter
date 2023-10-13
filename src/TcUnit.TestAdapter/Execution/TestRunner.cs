@@ -229,7 +229,7 @@ namespace TcUnit.TestAdapter.Execution
             using(MemoryStream  ms = new MemoryStream())
             {
                 target.UploadTestRunResults(ms);
-                return testResultParser.ParseFromFile(@"C:\Temp\testresults.xml");
+                return testResultParser.Parse(ms);
             }
         }
     }

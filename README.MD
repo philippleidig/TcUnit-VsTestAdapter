@@ -37,7 +37,6 @@ Let's assume that the working folder is `C:\Tools`.
     nuget install Microsoft.TestPlatform
     ```
 Find `vstest.console.exe` in `C:\Tools\Microsoft.TestPlatform.16.7.1\tools\net451\Common7\IDE\Extensions\TestPlatform`. 
-Add this folder to the PATH environment variable.
 
 3. Install [TcUnit.TestAdapter](https://www.nuget.org/packages/TcUnit.TestAdapter)
 

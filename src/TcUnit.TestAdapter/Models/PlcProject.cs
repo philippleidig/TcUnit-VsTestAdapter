@@ -21,6 +21,10 @@ namespace TcUnit.TestAdapter.Models
 
         public List<PlcLibraryReference> References { get; set; } = new List<PlcLibraryReference> { };
 
+        public List<TwinCATModuleClass> ModuleClasses { get; set; } = new List<TwinCATModuleClass> { };
+
+
+
         private PlcProject(string plcProjectFile)
         {
             CompletePathInFileSystem = plcProjectFile;
@@ -29,6 +33,7 @@ namespace TcUnit.TestAdapter.Models
             Name = FileNameInFileSystem.Replace(".plcproj", "");
 
             ParsePOUs();
+            ParseTMCs();
         }
 
         public static PlcProject ParseFromProjectFile(string plcProjectFile)
@@ -48,6 +53,31 @@ namespace TcUnit.TestAdapter.Models
 
         public static XNamespace XmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
+
+        private void ParseTMCs()
+        {
+            var doc = XDocument.Load(CompletePathInFileSystem);
+
+            var nodes = doc.Elements(XmlNamespace + "Project")
+                            .Elements(XmlNamespace + "ItemGroup")
+                            .Elements(XmlNamespace + "None");
+
+            foreach (var node in nodes)
+            {
+                var relativePath = node.Attribute("Include")?.Value;
+                if (relativePath.EndsWith(".tmc"))
+                {
+                    var tmcFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
+
+                    if (File.Exists(tmcFilePath))
+                    {
+                        var tmc = TwinCATModuleClass.ParseFromFilePath(tmcFilePath);
+                        ModuleClasses.Add(tmc);
+                    }
+                }
+            }
+        }
+
         private void ParsePOUs ()
         {
             var doc = XDocument.Load(CompletePathInFileSystem);
@@ -61,7 +91,7 @@ namespace TcUnit.TestAdapter.Models
             foreach (var node in nodes)
             {
                 var relativePath = node.Attribute("Include")?.Value;
-                if (relativePath.Contains(".TcPOU"))
+                if (relativePath.EndsWith(".TcPOU"))
                 {
                     var pouFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
 

@@ -20,4 +20,12 @@
     <ProjectReference Include="..\..\src\TcUnit.TestAdapter\TcUnit.TestAdapter.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="PlcTestProject\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy /Y /S &quot;$(SolutionDir)tests\TcUnit.TestAdapter.Tests\PlcTestProject&quot; &quot;$(TargetDir)\PlcTestProject\&quot;  " />
+  </Target>
+
 </Project>

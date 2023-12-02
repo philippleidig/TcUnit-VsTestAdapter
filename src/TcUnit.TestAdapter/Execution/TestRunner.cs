@@ -157,18 +157,6 @@ namespace TcUnit.TestAdapter.Execution
                 return false;
             }
 
-            var useDataTypeAsTestNames = "";
-
-            if (!library.Parameters.TryGetValue("USEDATATYPESASTESTNAMES", out useDataTypeAsTestNames))
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(useDataTypeAsTestNames) || !useDataTypeAsTestNames.Equals("TRUE"))
-            {
-                return false;
-            }
-
             return true;
         }
 

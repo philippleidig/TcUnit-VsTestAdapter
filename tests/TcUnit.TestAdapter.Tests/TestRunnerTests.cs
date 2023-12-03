@@ -19,13 +19,10 @@ namespace TcUnit.TestAdapter.Execution
         public void TestDiscoverTests()
         {
             var filePath = @"PlcTestProject\PlcTestProject.tsproj";
-
             var project = TwinCATXAEProject.Load(filePath);
-
             var logger = Mock.Of<IMessageLogger>();
 
             var testRunner = new TestRunner();
-
             var testCases = testRunner.DiscoverTests(project, logger);
 
             List<string> testCaseNames = new List<string>()

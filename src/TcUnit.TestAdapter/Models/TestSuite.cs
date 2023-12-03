@@ -39,28 +39,29 @@ namespace TcUnit.TestAdapter.Models
             var regex = new Regex(@"(?<=TEST(_ORDERED)?\()'(?<testName>[\w\d]+)'\)(.*?)(?=TEST_FINISHED)", RegexOptions.Singleline);
 
             var matches = regex.Matches(implementation);
-            foreach (Match match in matches) {
+            foreach (Match match in matches)
+            {
                 var testName = match.Groups["testName"].Value;
                 var test = new TestMethod();
                 test.Name = testName;
 
                 Tests.Add(test);
             }
-}
+        }
 
-public static TestSuite ParseFromFunctionBlock(FunctionBlock_POU functionBlock)
-{
-var testSuite = new TestSuite();
-testSuite.Name = functionBlock.Name;
+        public static TestSuite ParseFromFunctionBlock(FunctionBlock_POU functionBlock)
+        {
+            var testSuite = new TestSuite();
+            testSuite.Name = functionBlock.Name;
 
-testSuite.ParseTestCases(functionBlock.Implementation);
+            testSuite.ParseTestCases(functionBlock.Implementation);
 
-foreach (var method in functionBlock.Methods.Values)
-{
-    testSuite.ParseTestCases(method.Implementation);
-}
+            foreach (var method in functionBlock.Methods.Values)
+            {
+                testSuite.ParseTestCases(method.Implementation);
+            }
 
-return testSuite;
-}
-}
+            return testSuite;
+        }
+    }
 }

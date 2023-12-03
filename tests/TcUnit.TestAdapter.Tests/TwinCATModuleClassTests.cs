@@ -11,7 +11,8 @@ namespace TcUnit.TestAdapter.Tests
     public class TwinCATModuleClassTests
     {
         [TestMethod]
-        public void TestParseFromFile() {
+        public void TestParseFromFile()
+        {
             var filePath = @"PlcTestProject\FirstPLC\FirstPLC.tmc";
 
             var tmc = Models.TwinCATModuleClass.ParseFromFilePath(filePath);

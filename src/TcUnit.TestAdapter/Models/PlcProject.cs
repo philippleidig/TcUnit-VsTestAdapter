@@ -44,7 +44,7 @@ namespace TcUnit.TestAdapter.Models
                 throw new FileNotFoundException();
             }
 
-            if(!plcProjectFile.Contains(".plcproj"))
+            if (!plcProjectFile.Contains(".plcproj"))
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -79,7 +79,7 @@ namespace TcUnit.TestAdapter.Models
             }
         }
 
-        private void ParsePOUs ()
+        private void ParsePOUs()
         {
             var doc = XDocument.Load(CompletePathInFileSystem);
 
@@ -126,10 +126,10 @@ namespace TcUnit.TestAdapter.Models
                 {
                     var key = parameter.ElementAnyNS("Key")?.Value;
                     var value = parameter.ElementAnyNS("Value")?.Value;
-               
+
                     reference.Parameters.Add(key, value);
                 }
-           
+
                 References.Add(reference);
             }
         }

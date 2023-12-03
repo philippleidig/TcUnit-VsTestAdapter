@@ -11,7 +11,7 @@ namespace TcUnit.TestAdapter
         public const string PlcProjFileExtension = ".plcproj";
         public const string TsProjFileExtension = ".tsproj";
 
-        public const string TestResultPath = @"tcunit_testresults.xml"; 
+        public const string TestResultPath = @"tcunit_testresults.xml";
 
         public const string RunSettingsName = "TcUnit";
 

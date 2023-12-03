@@ -50,9 +50,9 @@ namespace TcUnit.TestAdapter.Models
 
             var targetPlatforms = Directory.GetDirectories(bootProjectFolder);
 
-            foreach (var plattform in targetPlatforms)
+            foreach (var platform in targetPlatforms)
             {
-                var platformName = Path.GetFileName(plattform);
+                var platformName = Path.GetFileName(platform);
 
                 if (Common.RTOperatingSystem.AvailableRTPlattforms.Values.Contains(platformName))
                 {

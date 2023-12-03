@@ -43,11 +43,12 @@ namespace TcUnit.TestAdapter.Models
                 throw new ArgumentNullException("Project is not prebuild");
             }
 
-            var bootProjects = xaeProject.BootProjects.Where(p => p.RTPlatform.Equals(Info.RTPlatform));
+            var bootProjects = xaeProject.BootProjects.Where(p => RTOperatingSystem.AvailableRTPlattforms[p.RTPlatform] == RTOperatingSystem.AvailableRTPlattforms[Info.RTPlatform]);
 
             if (!bootProjects.Any())
             {
-                throw new ArgumentOutOfRangeException("Could not find the corresponding TwinCAT target plattform in the prebuild boot projects: " + Info.RTPlatform.ToString());
+                var availableBootProjects = string.Join(", ", xaeProject.BootProjects.Select(p => p.RTPlatform.ToString()));
+                throw new ArgumentOutOfRangeException($"Could not find the corresponding TwinCAT target platform in the prebuild boot projects. Platform name: {Info.RTPlatform}. Available boot projects: {availableBootProjects}");
             }
             var bootProject = bootProjects.FirstOrDefault();
 
@@ -102,7 +103,7 @@ namespace TcUnit.TestAdapter.Models
         public void DownloadPlcProject(string path)
         {
             // Ensure target boot folder structure
-            try
+/*            try
             {
                 if (!systemService.DirectoryExistsInBootFolder("Plc"))
                 {
@@ -116,7 +117,7 @@ namespace TcUnit.TestAdapter.Models
             {
                 throw new Exception("Could not create /Boot/Plc folder on target with reason: " + ex.Message);
             }
-
+*/
 
             var plcAppFiles = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
 

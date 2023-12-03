@@ -30,9 +30,13 @@ namespace TcUnit.TestAdapter.Execution
 
             foreach (var plcProject in project.PlcProjects)
             {
-                if (!IsPlcProjectSuitableForTestRun(plcProject))
+                try 
                 {
-                    logger.SendMessage(TestMessageLevel.Informational, "Found non suitable PLC project");
+                   CheckPlcProjectSuitableForTestRun(plcProject);
+                }
+                catch (Exception e)
+                { 
+                    logger.SendMessage(TestMessageLevel.Informational, $"Found non suitable PLC project for {plcProject.Name}: {e.Message}");
                     continue;
                 }
 
@@ -152,13 +156,13 @@ namespace TcUnit.TestAdapter.Execution
             return testRun;
         }
 
-        private bool IsPlcProjectSuitableForTestRun(PlcProject project)
+        private void CheckPlcProjectSuitableForTestRun(PlcProject project)
         {
             var tcUnitLibraryReference = project.References.Where(r => r.Name == "TcUnit");
 
             if (!tcUnitLibraryReference.Any())
             {
-                return false;
+                throw NonSuitablePLCProjectException("TcUnit library not referenced");
             }
 
             var library = tcUnitLibraryReference.FirstOrDefault();
@@ -167,27 +171,25 @@ namespace TcUnit.TestAdapter.Execution
 
             if (!library.Parameters.TryGetValue("XUNITENABLEPUBLISH", out xUnitEnablePublish))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITENABLEPUBLISH parameter not found");
             }
 
             if (string.IsNullOrEmpty(xUnitEnablePublish) || !xUnitEnablePublish.Equals("TRUE"))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITENABLEPUBLISH parameter not set to TRUE");
             }
 
             var xUnitFilePath = "";
 
             if (!library.Parameters.TryGetValue("XUNITFILEPATH", out xUnitFilePath))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITFILEPATH parameter not found");
             }
 
             if (string.IsNullOrEmpty(xUnitFilePath))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITFILEPATH parameter not set");
             }
-
-            return true;
         }
 
         private void PrepareTargetForTestRun(TargetRuntime target, TwinCATXAEProject project, bool cleanUpBeforeTestRun)
@@ -249,6 +251,11 @@ namespace TcUnit.TestAdapter.Execution
                 target.UploadTestRunResults(ms);
                 return testResultParser.Parse(ms);
             }
+        }
+
+        public Exception NonSuitablePLCProjectException(string message)
+        {
+            throw new Exception(message);
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.XPath;
 using TcUnit.TestAdapter.XmlExtensions;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -102,9 +103,13 @@ namespace TcUnit.TestAdapter.Models
                 }
             }
 
-            var plcReferences = doc.Elements(XmlNamespace + "Project")
-                                            .Elements(XmlNamespace + "ItemGroup")
-                                            .Elements(XmlNamespace + "PlaceholderReference");
+            // the following supports two different types of library references which may be used in a PLC project
+            XmlNamespaceManager ns = new XmlNamespaceManager(new NameTable());
+            ns.AddNamespace("prefix", XmlNamespace.NamespaceName);
+            var xpath = "//prefix:Project/prefix:ItemGroup/prefix:LibraryReference";
+            xpath += "|//prefix:Project/prefix:ItemGroup/prefix:PlaceholderReference";
+
+            var plcReferences = doc.XPathSelectElements(xpath, ns);
 
             foreach (var plcLibrary in plcReferences)
             {
@@ -112,7 +117,7 @@ namespace TcUnit.TestAdapter.Models
 
                 var reference = new PlcLibraryReference
                 {
-                    Name = name,
+                    Name = name.Split(',')[0],
                 };
 
                 var parameters = plcLibrary.ElementAnyNS("Parameters");
@@ -132,6 +137,7 @@ namespace TcUnit.TestAdapter.Models
 
                 References.Add(reference);
             }
+
         }
     }
 }

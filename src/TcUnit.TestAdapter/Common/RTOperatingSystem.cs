@@ -144,7 +144,7 @@ namespace TcUnit.TestAdapter.Common
         public static RTPlatform GetRTPlatform(string osName)
         {
 
-            if (osName.StartsWith("TC/BSD"))
+            if (osName.StartsWith("TC/BSD") || osName.StartsWith("TwinCAT/BSD"))
             {
                 return RTPlatform.TcBSD;
             }

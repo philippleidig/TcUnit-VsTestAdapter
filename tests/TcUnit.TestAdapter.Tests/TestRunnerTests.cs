@@ -8,6 +8,7 @@ using TcUnit.TestAdapter.Models;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using Castle.Core.Logging;
 using Moq;
+using TcUnit.TestAdapter.RunSettings;
 
 namespace TcUnit.TestAdapter.Execution
 {
@@ -44,6 +45,23 @@ namespace TcUnit.TestAdapter.Execution
             {
                 Assert.IsTrue(testCaseNames.Contains(testCase.FullyQualifiedName));
             }
+        }
+
+        [TestMethod]
+        public void RunTestsTests()
+        {
+            var filePath = @"PlcTestProject\PlcTestProject.tsproj";
+            var project = TwinCATXAEProject.Load(filePath);
+            var logger = Mock.Of<IMessageLogger>();
+
+            var testRunner = new TestRunner();
+            var tests = testRunner.DiscoverTests(project, logger);
+
+            var settings = new TestSettings();
+            settings.Target = "172.18.232.132.1.1";
+            settings.CleanUpAfterTestRun = true;
+
+            testRunner.RunTests(project, tests, settings, logger);
         }
     }
 }

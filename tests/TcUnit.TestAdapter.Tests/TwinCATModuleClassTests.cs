@@ -20,9 +20,9 @@ namespace TcUnit.TestAdapter.Tests
 
             Assert.IsTrue(testSuiteDatatypes != null);
 
-            var testSuiteSymbol = tmc.Modules[0].DataAreas[1].Symbols.Find(x => x.BaseType == "FB_TestSomething");
+            var testSuiteSymbol = tmc.Modules[0].DataAreas[1].Symbols.Find(x => x.BaseType == "FB_TestSuite1");
             Assert.IsNotNull(testSuiteSymbol);
-            Assert.AreEqual("PRG_TESTS.fbTestSomething", testSuiteSymbol.Name);
+            Assert.AreEqual("PRG_TESTS.fbTestSuite1Instance1", testSuiteSymbol.Name);
         }
     }
 }

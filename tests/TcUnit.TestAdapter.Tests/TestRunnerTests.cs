@@ -31,10 +31,14 @@ namespace TcUnit.TestAdapter.Execution
             List<string> testCaseNames = new List<string>()
             { "PRG_TESTS.fbTestSuite1Instance1.TestCase1A",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1B",
+              "PRG_TESTS.fbTestSuite1Instance1.TestCase1C",
+              "PRG_TESTS.fbTestSuite1Instance1.TestCase1D",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2A",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2B",
+              "PRG_TESTS.fbTestSuite2Instance1.TestCase2C",
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2A",
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2B",
+              "PRG_TESTS.fbTestSuite2Instance2.TestCase2C",
             };
 
             Assert.IsTrue(testCases.Count() == testCaseNames.Count);

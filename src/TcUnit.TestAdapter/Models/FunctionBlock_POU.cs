@@ -50,6 +50,9 @@ namespace TcUnit.TestAdapter.Models
 
             var declaration = xFunctionBlock.Element("Declaration").Value;
 
+            functionBlock.Declaration = declaration;
+            functionBlock.Implementation = xFunctionBlock.Element("Implementation").Element("ST").Value;
+
             string lineEndingOfFile = declaration.Contains("\r\n") ? "\r\n" : "\n";
 
             string[] lines = declaration.Split(

@@ -1,5 +1,6 @@
 ﻿
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace TcUnit.TestAdapter.Models
 {
@@ -13,22 +14,53 @@ namespace TcUnit.TestAdapter.Models
 
         }
 
-        public static TestSuite ParseFromFunctionBlock(FunctionBlock_POU functionBlock)
+        private void ParseTestCases(string implementation)
         {
-            var testSuite = new TestSuite();
-            testSuite.Name = functionBlock.Name;
+            // match all groups in multi-line string where there is a section starting with
+            // TEST('name') OR TEST_ORDERED('name') and ending with TEST_FINISHED();
 
-            foreach (var method in functionBlock.Methods)
-            {
-                var testName = method.Key;
+            /*
+            TEST('TestCase1B');
 
+            AssertTrue(TRUE, 'Condition is not true');
+
+            TEST_FINISHED();
+
+            TEST('TestCase1A');
+
+            AssertTrue(2+2=4, 'Condition is not true');
+
+            TEST_FINISHED();
+
+            */
+
+            // use regex to find all test cases, for example above there would be two test cases 'TestCase1B' and 'TestCase1A'
+
+            var regex = new Regex(@"(?<=TEST(_ORDERED)?\()'(?<testName>[\w\d]+)'\)(.*?)(?=TEST_FINISHED)", RegexOptions.Singleline);
+
+            var matches = regex.Matches(implementation);
+            foreach (Match match in matches) {
+                var testName = match.Groups["testName"].Value;
                 var test = new TestMethod();
                 test.Name = testName;
 
-                testSuite.Tests.Add(test);
+                Tests.Add(test);
             }
+}
 
-            return testSuite;
-        }
-    }
+public static TestSuite ParseFromFunctionBlock(FunctionBlock_POU functionBlock)
+{
+var testSuite = new TestSuite();
+testSuite.Name = functionBlock.Name;
+
+testSuite.ParseTestCases(functionBlock.Implementation);
+
+foreach (var method in functionBlock.Methods.Values)
+{
+    testSuite.ParseTestCases(method.Implementation);
+}
+
+return testSuite;
+}
+}
 }

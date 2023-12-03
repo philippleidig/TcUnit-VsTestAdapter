@@ -11,19 +11,34 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[TestCase1A();
-TestCase1B();]]></ST>
+TestCase1BCD();]]></ST>
     </Implementation>
-    <Method Name="TestCase1B" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
-      <Declaration><![CDATA[METHOD TestCase1B
+    <Method Name="TestCase1BCD" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
+      <Declaration><![CDATA[METHOD TestCase1BCD
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
         <ST><![CDATA[TEST('TestCase1B');
 
+AssertTrue(False, 'Condition is not true');
+
+TEST_FINISHED_NAMED('TestCase1B');
+
+TEST_ORDERED('TestCase1C');
+
 AssertTrue(TRUE, 'Condition is not true');
 
-TEST_FINISHED();]]></ST>
+TEST_FINISHED();
+
+TEST('TestCase1D');
+
+AssertTrue(FALSE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
+
+
+TEST_FINISHED();
+]]></ST>
       </Implementation>
     </Method>
     <Method Name="TestCase1A" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">

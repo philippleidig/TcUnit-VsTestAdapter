@@ -11,7 +11,14 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[TestCase2A();
-TestCase2B();]]></ST>
+TestCase2B();
+
+TEST('TestCase2C');
+
+AssertTrue(TRUE, 'Condition is not true');
+AssertTrue(FALSE, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
     </Implementation>
     <Method Name="TestCase2A" Id="{08302e5c-315f-491e-adf5-28ac987840cc}">
       <Declaration><![CDATA[METHOD TestCase2A

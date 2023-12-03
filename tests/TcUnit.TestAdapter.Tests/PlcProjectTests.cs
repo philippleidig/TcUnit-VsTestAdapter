@@ -11,13 +11,16 @@ namespace TcUnit.TestAdapter.Tests
     public class PlcProjectTests
     {
         [TestMethod]
-        public void TestParseProjectFromFile() {
+        public void TestParseProjectFromFile()
+        {
             var filePath = @"PlcTestProject\FirstPLC\FirstPLC.plcproj";
 
             var plcProject = PlcProject.ParseFromProjectFile(filePath);
 
             Assert.IsTrue(plcProject.FunctionBlocks.Find(x => x.Name == "FB_TestSomething") != null);
             Assert.IsTrue(plcProject.ModuleClasses[0].DataTypes.Find(x => x.Name == "FB_TestSomething") != null);
+
+            Assert.IsTrue(plcProject.References.Find(x => x.Name == "TcUnit") != null);
         }
     }
 }

@@ -48,15 +48,15 @@ namespace TcUnit.TestAdapter.Models
                 return;
             }
 
-            var targetPlattforms = Directory.GetDirectories(bootProjectFolder);
+            var targetPlatforms = Directory.GetDirectories(bootProjectFolder);
 
-            foreach (var plattform in targetPlattforms)
+            foreach (var plattform in targetPlatforms)
             {
-                var plattformName = Path.GetFileName(plattform);
+                var platformName = Path.GetFileName(plattform);
 
-                if (Common.RTOperatingSystem.AvailableRTPlattforms.Values.Contains(plattformName))
+                if (Common.RTOperatingSystem.AvailableRTPlattforms.Values.Contains(platformName))
                 {
-                    var bootProjectPath = Path.Combine(bootProjectFolder, plattform);
+                    var bootProjectPath = Path.Combine(bootProjectFolder, platformName);
                     var bootProject = TwinCATBootProject.ParseFromLocalProjectBuildFolder(bootProjectPath);
                     _bootProjects.Add(bootProject);
                 }

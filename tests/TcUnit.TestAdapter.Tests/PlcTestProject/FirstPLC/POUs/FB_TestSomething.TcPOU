@@ -10,7 +10,8 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[TestTrue();]]></ST>
+      <ST><![CDATA[TestSum();
+TestTrue();]]></ST>
     </Implementation>
     <Method Name="TestTrue" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
       <Declaration><![CDATA[METHOD TestTrue
@@ -18,9 +19,22 @@ VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('TestAdd');
+        <ST><![CDATA[TEST('TestTrue');
 
 AssertTrue(TRUE, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestSum" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">
+      <Declaration><![CDATA[METHOD TestSum
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestSum');
+
+AssertTrue(2+2=4, 'Condition is not true');
 
 TEST_FINISHED();]]></ST>
       </Implementation>

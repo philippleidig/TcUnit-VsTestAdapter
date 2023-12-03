@@ -42,14 +42,22 @@ namespace TcUnit.TestAdapter.Models
 
             var doc = XDocument.Load(filepath);
 
-            var nodes = doc.Elements(XmlNamespace + "TcModuleClass")
+            var datatypes = doc.Elements(XmlNamespace + "TcModuleClass")
                             .Elements(XmlNamespace + "DataTypes")
                             .Elements(XmlNamespace + "DataType");
-
-            foreach (var node in nodes)
+            foreach (var datatype in datatypes)
             {
-                tmc.DataTypes.Add(TmcDataType.Parse(node));
+                tmc.DataTypes.Add(TmcDataType.Parse(datatype));
             }
+
+            var modules = doc.Elements(XmlNamespace + "TcModuleClass")
+                            .Elements(XmlNamespace + "Modules")
+                            .Elements(XmlNamespace + "Module");
+            foreach (var module in modules)
+            {
+                tmc.Modules.Add(TmcModule.Parse(module));
+            }
+
             return tmc;
         }
     }

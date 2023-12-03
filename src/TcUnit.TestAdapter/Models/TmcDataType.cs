@@ -5,29 +5,29 @@ using System.Xml.Linq;
 
 namespace TcUnit.TestAdapter.Models
 {
-    public class TmcDataType
+    public class TmcDataType : TmcItem
     {
-        public string Name { get; set; }
-        public string FilePath { get; set; }
-
-        public string Namespace { get; set; }
-
         public string ExtendsType { get; set; }
 
-        internal TmcDataType(string name, string namespace_ = null, string extendsType = null)
+        internal TmcDataType(string name, string extendsType = null)
         {
             Name = name;
-            Namespace = namespace_;
             ExtendsType = extendsType;
-    }
+        }
 
-        public static TmcDataType Parse(XElement xMethod)
+        public static TmcDataType Parse(XElement element)
         {
-            string namespace_ = xMethod.Attribute("Namespace")?.Value;
-            string name = xMethod.Element("Name").Value;
-            string extendsType = xMethod.Element("ExtendsType")?.Value;
+            string name = element.Element("Name").Value;
 
-            var dataType = new TmcDataType(name, namespace_, extendsType);
+            string extendsTypeName = null;
+            var extendsType = element.Element("ExtendsType");
+            if (extendsType != null)
+            {
+                string ns = extendsType.Attribute("Namespace")?.Value ?? "";
+                extendsTypeName = ns + "." + extendsType.Value;
+            }
+
+            var dataType = new TmcDataType(name, extendsTypeName);
 
             return dataType;
         }

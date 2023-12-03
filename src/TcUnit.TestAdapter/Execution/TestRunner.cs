@@ -36,24 +36,54 @@ namespace TcUnit.TestAdapter.Execution
                     continue;
                 }
 
-                // find possible test suites and test cases
-                var testCases = plcProject.FunctionBlocks
-                        .Where(pou => pou.Extends == TestAdapter.TestSuiteBaseClass);
+                // assume single module class file
+                var tmc = plcProject.ModuleClasses[0];
 
-                foreach (var pou in testCases)
+                // find datatypes of type FB_TestSuite
+                var testSuiteDatatypes = tmc.DataTypes
+                    .Where(dataType => dataType.ExtendsType == TestAdapter.TestSuiteBaseClass);
+
+                // find PLC instances
+                var modules = tmc.Modules
+                    .Where(module => module.TcSmClass == TestAdapter.PlcObjClass);
+
+                foreach (var module in modules)
                 {
-                    var testSuite = TestSuite.ParseFromFunctionBlock(pou);
-
-                    foreach (var testMethod in testSuite.Tests)
+                    // each PLC may have multiple tasks
+                    foreach (var dataArea in module.DataAreas)
                     {
-                        var testName = plcProject.Name + "." + testMethod.Name;
+                        // find symbols matching the datatypes found above
+                        var symbols = dataArea.Symbols
+                            .Where(symbol => testSuiteDatatypes.Any(testSuiteDatatype => testSuiteDatatype.Name == symbol.BaseType));
 
-                        var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
-                        test.LineNumber = 0;
-                        test.CodeFilePath = pou.FilePath;
-                        test.DisplayName = testName;
+                        foreach (var symbol in symbols)
+                        {
+                            var testSuiteName = symbol.Name;
 
-                        tests.Add(test);
+                            // try to match with testsuite POUs
+                            var testSuiteFB = plcProject.FunctionBlocks
+                                .Where(pou => pou.Name == symbol.BaseType)
+                                .FirstOrDefault();
+
+                            if (testSuiteFB == null)
+                            {
+                                logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {testSuiteName} not found in PLC project {plcProject.Name}");
+                                continue;
+                            }
+
+                            var testSuite = TestSuite.ParseFromFunctionBlock(testSuiteFB);
+                            foreach (var testMethod in testSuite.Tests)
+                            {
+                                var testName = plcProject.Name + "." + testMethod.Name;
+
+                                var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
+                                test.LineNumber = 0;
+                                test.CodeFilePath = testSuiteFB.FilePath;
+                                test.DisplayName = testName;
+
+                                tests.Add(test);
+                            }
+                        }
                     }
                 }
             }

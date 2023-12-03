@@ -6,6 +6,7 @@ using System.Reflection.Metadata;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using TcUnit.TestAdapter.XmlExtensions;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter.Models
@@ -82,8 +83,6 @@ namespace TcUnit.TestAdapter.Models
         {
             var doc = XDocument.Load(CompletePathInFileSystem);
 
-
-
             var nodes = doc.Elements(XmlNamespace + "Project")
                             .Elements(XmlNamespace + "ItemGroup")
                             .Elements(XmlNamespace + "Compile");
@@ -116,17 +115,17 @@ namespace TcUnit.TestAdapter.Models
                     Name = name,
                 };
 
-                var parameters = plcLibrary.Element(XmlNamespace + "Parameters");
+                var parameters = plcLibrary.ElementAnyNS("Parameters");
 
                 if (parameters == null)
                 {
                     continue;
                 }
 
-                foreach (var parameter in parameters.Elements(XmlNamespace + "Parameter"))
+                foreach (var parameter in parameters.ElementsAnyNS("Parameter"))
                 {
-                    var key = parameter.Element(XmlNamespace + "Key")?.Value;
-                    var value = parameter.Element(XmlNamespace + "Value")?.Value;
+                    var key = parameter.ElementAnyNS("Key")?.Value;
+                    var value = parameter.ElementAnyNS("Value")?.Value;
                
                     reference.Parameters.Add(key, value);
                 }

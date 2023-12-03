@@ -20,6 +20,6 @@ namespace TcUnit.TestAdapter
         public const string DefaultTargetRuntime = "127.0.0.1.1.1";
         public const bool DefaultCleanUpAfterTestRun = true;
 
-
+        public const string PlcObjClass = "TComPlcObjDef";
     }
 }

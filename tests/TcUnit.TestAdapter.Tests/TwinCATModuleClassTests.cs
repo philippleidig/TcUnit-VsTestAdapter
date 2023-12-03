@@ -16,9 +16,13 @@ namespace TcUnit.TestAdapter.Tests
 
             var tmc = Models.TwinCATModuleClass.ParseFromFilePath(filePath);
 
-            var testSuiteDatatypes = tmc.DataTypes.Find(x => x.ExtendsType == "FB_TestSuite");
+            var testSuiteDatatypes = tmc.DataTypes.Find(x => x.ExtendsType == TestAdapter.TestSuiteBaseClass);
 
             Assert.IsTrue(testSuiteDatatypes != null);
+
+            var testSuiteSymbol = tmc.Modules[0].DataAreas[1].Symbols.Find(x => x.BaseType == "FB_TestSomething");
+            Assert.IsNotNull(testSuiteSymbol);
+            Assert.AreEqual("PRG_TESTS.fbTestSomething", testSuiteSymbol.Name);
         }
     }
 }

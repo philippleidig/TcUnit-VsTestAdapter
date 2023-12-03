@@ -28,7 +28,21 @@ namespace TcUnit.TestAdapter.Execution
 
             var testCases = testRunner.DiscoverTests(project, logger);
 
-            Assert.IsTrue(testCases.Count() == 2);
+            List<string> testCaseNames = new List<string>()
+            { "PRG_TESTS.fbTestSuite1Instance1.TestCase1A",
+              "PRG_TESTS.fbTestSuite1Instance1.TestCase1B",
+              "PRG_TESTS.fbTestSuite2Instance1.TestCase2A",
+              "PRG_TESTS.fbTestSuite2Instance1.TestCase2B",
+              "PRG_TESTS.fbTestSuite2Instance2.TestCase2A",
+              "PRG_TESTS.fbTestSuite2Instance2.TestCase2B",
+            };
+
+            Assert.IsTrue(testCases.Count() == testCaseNames.Count);
+
+            foreach (var testCase in testCases)
+            {
+                Assert.IsTrue(testCaseNames.Contains(testCase.FullyQualifiedName));
+            }
         }
     }
 }

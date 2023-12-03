@@ -24,7 +24,10 @@
     <Compile Include="PlcTask2.TcTTO">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="POUs\FB_TestSomething.TcPOU">
+    <Compile Include="POUs\FB_TestSuite1.TcPOU">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="POUs\FB_TestSuite2.TcPOU">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="POUs\MAIN.TcPOU">

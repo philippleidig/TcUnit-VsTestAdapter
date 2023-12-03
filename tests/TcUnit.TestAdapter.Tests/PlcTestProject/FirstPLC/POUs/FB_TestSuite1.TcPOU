@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
-  <POU Name="FB_TestSomething" Id="{a5ea8811-5301-4f6c-aafd-b2e96e83b4a4}" SpecialFunc="None">
-    <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSomething EXTENDS FB_TestSuite
+  <POU Name="FB_TestSuite1" Id="{a5ea8811-5301-4f6c-aafd-b2e96e83b4a4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSuite1 EXTENDS FB_TestSuite
 VAR_INPUT
 END_VAR
 VAR_OUTPUT
@@ -10,29 +10,29 @@ VAR
 END_VAR
 ]]></Declaration>
     <Implementation>
-      <ST><![CDATA[TestSum();
-TestTrue();]]></ST>
+      <ST><![CDATA[TestCase1A();
+TestCase1B();]]></ST>
     </Implementation>
-    <Method Name="TestTrue" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
-      <Declaration><![CDATA[METHOD TestTrue
+    <Method Name="TestCase1B" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
+      <Declaration><![CDATA[METHOD TestCase1B
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('TestTrue');
+        <ST><![CDATA[TEST('TestCase1B');
 
 AssertTrue(TRUE, 'Condition is not true');
 
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
-    <Method Name="TestSum" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">
-      <Declaration><![CDATA[METHOD TestSum
+    <Method Name="TestCase1A" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">
+      <Declaration><![CDATA[METHOD TestCase1A
 VAR_INPUT
 END_VAR
 ]]></Declaration>
       <Implementation>
-        <ST><![CDATA[TEST('TestSum');
+        <ST><![CDATA[TEST('TestCase1A');
 
 AssertTrue(2+2=4, 'Condition is not true');
 

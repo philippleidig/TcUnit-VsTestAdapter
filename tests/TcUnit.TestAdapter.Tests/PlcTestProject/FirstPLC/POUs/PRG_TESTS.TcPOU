@@ -3,7 +3,9 @@
   <POU Name="PRG_TESTS" Id="{2f8fcc6e-c36b-40b5-a0ea-8b06b18e1a90}" SpecialFunc="None">
     <Declaration><![CDATA[PROGRAM PRG_TESTS
 VAR
-    fbTestSomething : FB_TestSomething;
+    fbTestSuite1Instance1 : FB_TestSuite1;
+    fbTestSuite2Instance1 : FB_TestSuite2;
+    fbTestSuite2Instance2 : FB_TestSuite2;
 END_VAR
 ]]></Declaration>
     <Implementation>

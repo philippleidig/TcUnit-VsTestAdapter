@@ -20,7 +20,7 @@ namespace TcUnit.TestAdapter.Models
 
             foreach (var method in functionBlock.Methods)
             {
-                var testName = functionBlock.Name + "." + method.Key;
+                var testName = method.Key;
 
                 var test = new TestMethod();
                 test.Name = testName;

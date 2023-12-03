@@ -58,7 +58,7 @@ namespace TcUnit.TestAdapter.Execution
 
                         foreach (var symbol in symbols)
                         {
-                            var testSuiteName = symbol.Name;
+                            var symbolInstancePath = symbol.Name;
 
                             // try to match with testsuite POUs
                             var testSuiteFB = plcProject.FunctionBlocks
@@ -67,14 +67,14 @@ namespace TcUnit.TestAdapter.Execution
 
                             if (testSuiteFB == null)
                             {
-                                logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {testSuiteName} not found in PLC project {plcProject.Name}");
+                                logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {symbol.BaseType} not found in PLC project {plcProject.Name}");
                                 continue;
                             }
 
                             var testSuite = TestSuite.ParseFromFunctionBlock(testSuiteFB);
                             foreach (var testMethod in testSuite.Tests)
                             {
-                                var testName = plcProject.Name + "." + testMethod.Name;
+                                var testName = symbolInstancePath + "." + testMethod.Name;
 
                                 var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
                                 test.LineNumber = 0;

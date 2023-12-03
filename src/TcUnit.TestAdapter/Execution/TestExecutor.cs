@@ -59,7 +59,7 @@ namespace TcUnit.TestAdapter
             try
             {
                 var settings = runContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
-                var testCaseFilter = new TestCaseFilter(runContext);
+                var testCaseFilter = new TestCaseFilter(runContext, frameworkHandle);
 
                 var project = TwinCATXAEProject.Load(sources.First());
 
@@ -71,7 +71,7 @@ namespace TcUnit.TestAdapter
                     throw new ArgumentOutOfRangeException("Source does not contain any test case.");
                 }
                
-                var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle as IMessageLogger);
+                var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle);
                
                 PrintRunConditions(frameworkHandle, testRun.Conditions);
                

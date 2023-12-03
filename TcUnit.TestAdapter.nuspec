@@ -2,7 +2,7 @@
 <package >
   <metadata>
     <id>TcUnit.TestAdapter</id>
-    <version>0.0.5-beta</version>
+    <version>0.0.6-beta</version>
     <title>TcUnit.TestAdapter</title>
     <authors>Philipp Leidig</authors>
     <requireLicenseAcceptance>true</requireLicenseAcceptance>

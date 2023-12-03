@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 
 namespace TcUnit.TestAdapter.Discovery
 {
@@ -20,25 +21,27 @@ namespace TcUnit.TestAdapter.Discovery
         readonly bool successfullyGotFilter;
         readonly bool isDiscovery;
 
+        readonly IMessageLogger logger;
+
         public TestCaseFilter(
             IRunContext runContext,
-          //  LoggerHelper logger,
+            IMessageLogger logger,
             string assemblyFileName,
             HashSet<string> knownTraits)
         {
             this.knownTraits = knownTraits;
+            this.logger = logger;
             supportedPropertyNames = GetSupportedPropertyNames();
-
             successfullyGotFilter = GetTestCaseFilterExpression(runContext, assemblyFileName, out filterExpression);
         }
 
-        public TestCaseFilter( IDiscoveryContext discoveryContext)
+        public TestCaseFilter(IDiscoveryContext discoveryContext, IMessageLogger logger)
         {
-            // Traits are not known at discovery time because we load them from tests
+            this.logger = logger;
             isDiscovery = true;
+            // Traits are not known at discovery time because we load them from tests
             knownTraits = new HashSet<string>();
             supportedPropertyNames = GetSupportedPropertyNames();
-
             successfullyGotFilter = GetTestCaseFilterExpressionFromDiscoveryContext(discoveryContext, out filterExpression);
         }
 
@@ -98,7 +101,7 @@ namespace TcUnit.TestAdapter.Discovery
             }
             catch (TestPlatformFormatException e)
             {
-                //logger.LogWarning("{0}: Exception filtering tests: {1}", Path.GetFileNameWithoutExtension(assemblyFileName), e.Message);
+                logger.SendMessage(TestMessageLevel.Warning, $"{Path.GetFileNameWithoutExtension(assemblyFileName)}: Exception filtering tests: {e.Message}");
                 return false;
             }
         }
@@ -118,11 +121,10 @@ namespace TcUnit.TestAdapter.Discovery
                 }
                 catch (TestPlatformException e)
                 {
-                    //logger.LogWarning("Exception filtering tests: {0}", e.Message);
+                    logger.SendMessage(TestMessageLevel.Warning, $"Exception filtering tests: {e.Message}");
                     return false;
                 }
             }
-
             return false;
         }
 

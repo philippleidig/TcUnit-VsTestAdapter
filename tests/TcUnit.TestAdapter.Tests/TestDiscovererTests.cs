@@ -12,8 +12,36 @@ using TcUnit.TestAdapter.Discovery;
 
 namespace TcUnit.TestAdapter.Tests
 {
+    [TestClass]
     public class TestDiscovererTests : TestContainer
     {
+        [TestMethod]
+        public void TestDiscoverTests()
+        {
+            // Arrange
+            var mockLogger = Mock.Of<IMessageLogger>();
+            var mockDiscoveryContext = Mock.Of<IDiscoveryContext>();
 
+            var testCaseDiscoverySink = new TestCaseDiscoverySink();
+            var testDiscoverer = new TestDiscoverer();
+
+            var testSources = new List<string>() { @"PlcTestProject\PlcTestProject.tsproj" };
+
+            // Act
+            testDiscoverer.DiscoverTests(testSources, mockDiscoveryContext, mockLogger, testCaseDiscoverySink);
+
+            // Assert
+            Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 10); 
+        }
+    }
+
+    internal class TestCaseDiscoverySink : ITestCaseDiscoverySink
+    {
+        public List<TestCase> TestCases = new List<TestCase>();
+        public void SendTestCase(TestCase discoveredTest)
+        {
+            TestCases.Add(discoveredTest);
+        }
     }
 }
+

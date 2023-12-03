@@ -156,6 +156,10 @@ namespace TcUnit.TestAdapter.Common
             {
                 return RTPlatform.WinNT;
             }
+            else if (osName.StartsWith("Windows 11"))
+            {
+                return RTPlatform.WinNT;
+            }
             else if (osName == "Win NT")
             {
                 return RTPlatform.WinNT;

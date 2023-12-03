@@ -101,7 +101,7 @@ namespace TcUnit.TestAdapter.Execution
 
             if (!project.IsPlcProjectIncluded)
             {
-                throw new Exception("TwinCAT XAE project doas not contain at least one PLC projects.");
+                throw new Exception("TwinCAT XAE project does not contain at least one PLC project.");
             }
 
             var target = runSettings.Target;

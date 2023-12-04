@@ -23,6 +23,11 @@ namespace TcUnit.TestAdapter.Models
             Info = systemService.GetDeviceInfo();
         }
 
+        public bool Disconnect()
+        {
+            return systemService.Disconnect();
+        }
+
         public bool IsReachable => systemService.IsReachable();
 
         public void SwitchToConfigMode()
@@ -103,13 +108,13 @@ namespace TcUnit.TestAdapter.Models
         public void DownloadPlcProject(string path)
         {
             // Ensure target boot folder structure
-/*            try
+            try
             {
                 if (!systemService.DirectoryExistsInBootFolder("Plc"))
                 {
                     if (!systemService.CreateDirectoryInBootFolder("Plc"))
                     {
-                        throw new Exception("Could not create /Boot/Plc folder on target.");
+                        //throw new Exception("Could not create /Boot/Plc folder on target.");
                     }
                 }
             }
@@ -117,7 +122,7 @@ namespace TcUnit.TestAdapter.Models
             {
                 throw new Exception("Could not create /Boot/Plc folder on target with reason: " + ex.Message);
             }
-*/
+
 
             var plcAppFiles = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
 

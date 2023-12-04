@@ -50,18 +50,29 @@ namespace TcUnit.TestAdapter.Execution
         [TestMethod]
         public void RunTestsTests()
         {
+            // currently this requires the target boot folder to already be empty and the target in config mode
             var filePath = @"PlcTestProject\PlcTestProject.tsproj";
             var project = TwinCATXAEProject.Load(filePath);
             var logger = Mock.Of<IMessageLogger>();
 
+
+            var settings = new TestSettings();
+            settings.Target = "172.18.232.132.1.1";  //"192.168.4.1.1.1";
+            settings.CleanUpAfterTestRun = true;
+
+            // attempt to clean up the target boot folder
+            var systemService = new SystemService(settings.Target);
+            var targetInfo = systemService.GetDeviceInfo();
+            systemService.SwitchRuntimeState(TwinCAT.Ads.AdsState.Reconfig);
+            systemService.CleanUpBootDirectory(targetInfo.ImageOsName);
+            systemService.Disconnect();
+            
             var testRunner = new TestRunner();
             var tests = testRunner.DiscoverTests(project, logger);
 
-            var settings = new TestSettings();
-            settings.Target = "172.18.232.132.1.1";
-            settings.CleanUpAfterTestRun = true;
+            var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            testRunner.RunTests(project, tests, settings, logger);
+            Assert.IsTrue(testRun.Results.Count() == 10);
         }
     }
 }

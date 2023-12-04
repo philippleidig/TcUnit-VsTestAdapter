@@ -5,7 +5,7 @@
         <TestSessionTimeout>20000</TestSessionTimeout>
     </RunConfiguration>
     <TcUnit>
-        <Target>86.144.205.105.1.1</Target> 
+        <Target>127.0.0.1.1.1</Target> 
         <CleanUpAfterTestRun>true</CleanUpAfterTestRun>
     </TcUnit>
 </RunSettings>

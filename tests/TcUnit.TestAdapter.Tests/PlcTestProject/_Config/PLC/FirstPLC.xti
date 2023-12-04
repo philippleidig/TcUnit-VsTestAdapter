@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.53" ClassName="CNestedPlcProjDef">
-	<Project GUID="{EA0D0955-5CCE-458C-A009-A6F77B8A0B99}" Name="FirstPLC" PrjFilePath="..\..\FirstPLC\FirstPLC.plcproj" TmcFilePath="..\..\FirstPLC\FirstPLC.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e">
-		<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="FirstPLC\FirstPLC.tmc" TmcHash="{028817CB-38BE-697D-2986-0A3E9F5B7955}">
+	<Project GUID="{EA0D0955-5CCE-458C-A009-A6F77B8A0B99}" Name="FirstPLC" PrjFilePath="..\..\FirstPLC\FirstPLC.plcproj" TmcFilePath="..\..\FirstPLC\FirstPLC.tmc" ReloadTmc="true" AmsPort="851" TargetArchiveSettings="#x0000" FileArchiveSettings="#x0000">
+		<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="FirstPLC\FirstPLC.tmc" TmcHash="{9BCBD4C1-5C59-5C9A-5C58-494033EDF650}">
 			<Name>FirstPLC Instance</Name>
 			<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 			<Contexts>

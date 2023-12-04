@@ -234,7 +234,7 @@ namespace TcUnit.TestAdapter.Execution
         private void PerformTestRunOnTarget(TargetRuntime target)
         {
             target.SwitchToRunMode();
-
+            
             var isTestRunFinished = false;
 
             while (!isTestRunFinished)

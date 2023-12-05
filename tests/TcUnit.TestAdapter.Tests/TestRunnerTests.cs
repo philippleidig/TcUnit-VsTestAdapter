@@ -32,6 +32,7 @@ namespace TcUnit.TestAdapter.Execution
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1C",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1D",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1E with a space",
+              "PRG_TESTS.fbTestSuite1Instance1.TestCase1F Ignore Case",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2A",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2B",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2C",
@@ -73,7 +74,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            Assert.IsTrue(testRun.Results.Count() == 11);
+            Assert.IsTrue(testRun.Results.Count() == 12);
         }
     }
 }

@@ -36,7 +36,7 @@ namespace TcUnit.TestAdapter.Models
 
             // use regex to find all test cases, for example above there would be two test cases 'TestCase1B' and 'TestCase1A'
 
-            var regex = new Regex(@"(?<=TEST(_ORDERED)?\()'(?<testName>[\s\w\d]+)'\)(.*?)(?=TEST_FINISHED)", RegexOptions.Singleline);
+            var regex = new Regex(@"(?<=TEST(_ORDERED)?\()'(?<testName>[\s\w\d]+)'\)(.*?)(?=TEST_FINISHED)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
 
             var matches = regex.Matches(implementation);
             foreach (Match match in matches)

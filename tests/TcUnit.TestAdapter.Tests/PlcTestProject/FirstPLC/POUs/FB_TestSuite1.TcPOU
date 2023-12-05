@@ -11,7 +11,8 @@ END_VAR
 ]]></Declaration>
     <Implementation>
       <ST><![CDATA[TestCase1A();
-TestCase1BCD();]]></ST>
+TestCase1BCD();
+TestCase1F_IgnoreCase();]]></ST>
     </Implementation>
     <Method Name="TestCase1BCD" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
       <Declaration><![CDATA[METHOD TestCase1BCD
@@ -48,6 +49,23 @@ AssertTrue(TRUE, 'Condition is not true');
 
 
 TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestCase1F_IgnoreCase" Id="{93ccc455-0496-40f6-9dd8-d004dfed4904}">
+      <Declaration><![CDATA[METHOD TestCase1F_IgnoreCase : REFERENCE TO FB_Test
+VAR_INPUT
+END_VAR
+VAR_INST
+    step : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF TesT_ORdEReD('TestCase1F Ignore Case') THEN
+    AssertFalse(False, 'Condition is not false');
+    // introduce whitespace for test        
+            TEsT_FiNiSHED();
+END_IF]]></ST>
       </Implementation>
     </Method>
     <Method Name="TestCase1A" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">

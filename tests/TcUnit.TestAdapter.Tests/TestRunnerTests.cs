@@ -31,6 +31,7 @@ namespace TcUnit.TestAdapter.Execution
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1B",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1C",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1D",
+              "PRG_TESTS.fbTestSuite1Instance1.TestCase1E with a space",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2A",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2B",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2C",

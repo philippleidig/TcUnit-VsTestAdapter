@@ -25,11 +25,12 @@ AssertTrue(False, 'Condition is not true');
 
 TEST_FINISHED_NAMED('TestCase1B');
 
-TEST_ORDERED('TestCase1C');
+IF TEST_ORDERED('TestCase1C') THEN
 
-AssertTrue(TRUE, 'Condition is not true');
+    AssertTrue(TRUE, 'Condition is not true');
 
-TEST_FINISHED();
+    TEST_FINISHED();
+END_IF
 
 TEST('TestCase1D');
 
@@ -38,7 +39,15 @@ AssertTrue(TRUE, 'Condition is not true');
 
 
 TEST_FINISHED();
-]]></ST>
+
+
+TEST('TestCase1E with a space');
+
+AssertTrue(FALSE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
+
+
+TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
     <Method Name="TestCase1A" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">

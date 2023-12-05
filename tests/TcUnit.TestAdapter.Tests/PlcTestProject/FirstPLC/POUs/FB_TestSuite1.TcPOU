@@ -43,7 +43,7 @@ TEST_FINISHED();
 
 TEST('TestCase1E with a space');
 
-AssertTrue(FALSE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
 AssertTrue(TRUE, 'Condition is not true');
 
 

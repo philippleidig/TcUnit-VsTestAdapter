@@ -73,7 +73,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            Assert.IsTrue(testRun.Results.Count() == 10);
+            Assert.IsTrue(testRun.Results.Count() == 11);
         }
     }
 }

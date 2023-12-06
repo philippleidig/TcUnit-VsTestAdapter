@@ -81,5 +81,21 @@ AssertTrue(2+2=4, 'Condition is not true');
 TEST_FINISHED();]]></ST>
       </Implementation>
     </Method>
+    <Method Name="TestCase1G_Characters" Id="{d71f7ba2-1c33-4a28-87c8-9ec150ddf7fd}">
+      <Declaration><![CDATA[METHOD TestCase1G_Characters : REFERENCE TO FB_Test
+VAR_INPUT
+END_VAR
+VAR_INST
+    step : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF TEST_ORDERED('TestCase1G 1*/_-1^&"@!()') THEN
+    AssertFalse(TRUE, 'Condition is not false');
+    TEST_FINISHED();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
   </POU>
 </TcPlcObject>

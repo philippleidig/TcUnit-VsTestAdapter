@@ -207,15 +207,14 @@ namespace TcUnit.TestAdapter.Execution
             {
                 var testResult = new TestResult(test);
 
-                var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
+                try {
+                    var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
 
-                if (result != null)
-                {
                     testResult.Outcome = result.Outcome;
                     testResult.Duration = result.Duration;
                     testResult.ErrorMessage = result.ErrorMessage;
                 }
-                else
+                catch
                 {
                     testResult.Outcome = TestOutcome.Skipped;
                 }

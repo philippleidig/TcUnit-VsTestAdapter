@@ -9,6 +9,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using Castle.Core.Logging;
 using Moq;
 using TcUnit.TestAdapter.RunSettings;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 
 namespace TcUnit.TestAdapter.Execution
 {
@@ -33,6 +34,7 @@ namespace TcUnit.TestAdapter.Execution
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1D",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1E with a space",
               "PRG_TESTS.fbTestSuite1Instance1.TestCase1F Ignore Case",
+              "PRG_TESTS.fbTestSuite1Instance1.TestCase1G 1*/_-1^&\"@!()",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2A",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2B",
               "PRG_TESTS.fbTestSuite2Instance1.TestCase2C",
@@ -74,7 +76,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            Assert.IsTrue(testRun.Results.Count() == 12);
+            Assert.IsTrue(testRun.Results.Count() == 13);
         }
     }
 }

@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection.Metadata;
 using System.Xml;
 using System.Xml.Linq;
-using System.Xml.Serialization;
 using System.Xml.XPath;
-using TcUnit.TestAdapter.XmlExtensions;
-using static System.Net.Mime.MediaTypeNames;
+using TcUnit.TestAdapter.Extensions;
 
 namespace TcUnit.TestAdapter.Models
 {
@@ -20,12 +16,8 @@ namespace TcUnit.TestAdapter.Models
         public string Name { get; set; }
 
         public List<FunctionBlock_POU> FunctionBlocks { get; set; } = new List<FunctionBlock_POU>();
-
         public List<PlcLibraryReference> References { get; set; } = new List<PlcLibraryReference> { };
-
         public List<TwinCATModuleClass> ModuleClasses { get; set; } = new List<TwinCATModuleClass> { };
-
-
 
         private PlcProject(string plcProjectFile)
         {
@@ -54,7 +46,6 @@ namespace TcUnit.TestAdapter.Models
         }
 
         public static XNamespace XmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
-
 
         private void ParseTMCs()
         {
@@ -137,7 +128,6 @@ namespace TcUnit.TestAdapter.Models
 
                 References.Add(reference);
             }
-
         }
     }
 }

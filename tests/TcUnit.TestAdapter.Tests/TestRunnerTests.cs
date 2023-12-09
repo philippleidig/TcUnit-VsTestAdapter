@@ -61,7 +61,7 @@ namespace TcUnit.TestAdapter.Execution
 
 
             var settings = new TestSettings();
-            settings.Target = "172.18.232.132.1.1";  //"192.168.4.1.1.1";
+            settings.Target = "127.0.0.1.1.1";  //"192.168.4.1.1.1";
             settings.CleanUpAfterTestRun = true;
 
             // attempt to clean up the target boot folder

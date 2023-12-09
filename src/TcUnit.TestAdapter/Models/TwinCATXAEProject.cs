@@ -27,11 +27,6 @@ namespace TcUnit.TestAdapter.Models
             _bootProjects = new List<TwinCATBootProject>();
             _plcProjects = new List<PlcProject>();
 
-            if (Path.GetExtension(filepath) != ".tsproj")
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
             FilePath = filepath;
             ProjectFolder = Path.GetDirectoryName(filepath);
 
@@ -54,10 +49,10 @@ namespace TcUnit.TestAdapter.Models
             {
                 var platformName = Path.GetFileName(platform);
 
-                if (Common.RTOperatingSystem.AvailableRTPlattforms.Values.Contains(platformName))
+                if (RTOperatingSystem.AvailableRTPlattforms.Values.Contains(platformName))
                 {
                     var bootProjectPath = Path.Combine(bootProjectFolder, platformName);
-                    var bootProject = TwinCATBootProject.ParseFromLocalProjectBuildFolder(bootProjectPath);
+                    var bootProject = TwinCATBootProject.Load(bootProjectPath);
                     _bootProjects.Add(bootProject);
                 }
             }
@@ -78,6 +73,11 @@ namespace TcUnit.TestAdapter.Models
 
         public static TwinCATXAEProject Load(string filepath)
         {
+            if (Path.GetExtension(filepath) != TestAdapter.TsProjFileExtension)
+            {
+                throw new ArgumentOutOfRangeException(nameof(filepath));
+            }
+
             return new TwinCATXAEProject(filepath);
         }
 

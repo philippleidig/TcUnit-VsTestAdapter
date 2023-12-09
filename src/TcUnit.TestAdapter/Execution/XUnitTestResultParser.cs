@@ -76,8 +76,12 @@ namespace TcUnit.TestAdapter.Execution
                 result.Outcome = TestOutcome.Passed;
             }
 
-            var duration = Convert.ToDouble(testCaseElement.Attribute("time").Value);
-            result.Duration = TimeSpan.FromSeconds(duration);
+            try
+            {
+                var duration = Convert.ToDouble(testCaseElement.Attribute("time").Value);
+                result.Duration = TimeSpan.FromSeconds(duration);
+            }
+            catch { }
 
             return result;
         }

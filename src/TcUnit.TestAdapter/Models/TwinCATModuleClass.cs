@@ -14,9 +14,7 @@ namespace TcUnit.TestAdapter.Models
         public string Name { get; set; }
 
         public List<TmcDataType> DataTypes { get; set; } = new List<TmcDataType>();
-
         public List<TmcModule> Modules { get; set; } = new List<TmcModule> { };
-
 
         public static XNamespace XmlNamespace = "";
 

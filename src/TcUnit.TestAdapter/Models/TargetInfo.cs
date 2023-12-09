@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using TcUnit.TestAdapter.Common;
 
 namespace TcUnit.TestAdapter.Models

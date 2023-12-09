@@ -1,10 +1,7 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using TcUnit.TestAdapter.Common;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter.Models
 {

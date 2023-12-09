@@ -1,5 +1,4 @@
 ﻿using System.IO;
-using System.Linq;
 using TcUnit.TestAdapter.Common;
 
 namespace TcUnit.TestAdapter.Models

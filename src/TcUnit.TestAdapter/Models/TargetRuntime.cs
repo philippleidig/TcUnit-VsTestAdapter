@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using TcUnit.TestAdapter.Common;
 using TwinCAT.Ads;
 

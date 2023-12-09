@@ -2,25 +2,20 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Xml;
 using System.Xml.Linq;
 
 namespace TcUnit.TestAdapter.Models
 {
     public class FunctionBlock_POU : POU
     {
-
         public Dictionary<string, Method_POU> Methods = new Dictionary<string, Method_POU>();
-
         public string Extends { get; set; }
-
         public List<string> AccessModifiers { get; set; } = new List<string>();
         public List<string> Attributes { get; set; } = new List<string>();
         public List<string> Implements { get; set; } = new List<string>();
 
-        public FunctionBlock_POU ()
+        private FunctionBlock_POU ()
         {
             
         }

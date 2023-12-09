@@ -12,9 +12,7 @@ namespace TcUnit.TestAdapter.Models
     {
         private readonly SystemService systemService;
         public TargetInfo Info { get; set; }
-
         public AmsNetId AmsNetId { get; set; }
-
 
         public TargetRuntime(string target)
         {
@@ -39,7 +37,6 @@ namespace TcUnit.TestAdapter.Models
         {
             systemService.SwitchRuntimeState(AdsState.Reset);
         }
-
 
         public void DownloadProject(TwinCATXAEProject xaeProject, bool cleanBeforeDownload = true)
         {

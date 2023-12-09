@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Xml.Linq;
-using TwinCAT.TypeSystem;
 
 namespace TcUnit.TestAdapter.Models
 {

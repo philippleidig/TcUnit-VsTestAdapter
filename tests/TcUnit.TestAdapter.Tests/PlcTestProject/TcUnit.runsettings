@@ -3,10 +3,10 @@
     <RunConfiguration>
         <!-- Specify timeout in milliseconds. A valid value should be greater than 0 -->
         <TestSessionTimeout>120000</TestSessionTimeout>
-        <TestAdaptersPaths>C:\Users\david.freiberger\source\repos\TcUnit-VsTestAdapter\src\TcUnit.TestAdapter\bin\Debug\netstandard2.0</TestAdaptersPaths>
+        <TestAdaptersPaths>..\src\TcUnit.TestAdapter\bin\Release\netstandard2.0</TestAdaptersPaths>
     </RunConfiguration>
     <TcUnit>
-        <Target>172.18.232.132.1.1</Target> 
+        <Target>127.0.0.1.1.1</Target> 
         <CleanUpAfterTestRun>false</CleanUpAfterTestRun>
     </TcUnit>
 </RunSettings>

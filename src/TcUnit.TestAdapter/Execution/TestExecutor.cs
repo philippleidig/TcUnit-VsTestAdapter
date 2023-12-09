@@ -1,24 +1,21 @@
-﻿using System;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
-
-using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
-using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Execution;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter
 {
     [ExtensionUri(TestAdapter.ExecutorUriString)]
     public class TestExecutor : ITestExecutor
     {
-
         private readonly ITestRunner testRunner;
         private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
         private readonly object obj = new object();

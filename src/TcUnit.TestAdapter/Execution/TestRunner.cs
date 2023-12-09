@@ -2,21 +2,14 @@
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Threading;
-using System.Threading.Tasks;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Common;
-using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
-using TwinCAT.Ads;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter.Execution
 {

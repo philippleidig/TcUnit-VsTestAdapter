@@ -1,11 +1,6 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Serialization;
 
@@ -16,7 +11,8 @@ namespace TcUnit.TestAdapter.RunSettings
     {
         private static readonly XmlSerializer serializer = new XmlSerializer(typeof(TestSettings));
 
-        public TestSettings() : base(TestAdapter.RunSettingsName)
+        public TestSettings() 
+            : base(TestAdapter.RunSettingsName)
         {
 
         }

@@ -6,6 +6,8 @@ using System.Reflection.Metadata;
 using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
+using System.Xml.XPath;
+using TcUnit.TestAdapter.XmlExtensions;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter.Models
@@ -21,6 +23,10 @@ namespace TcUnit.TestAdapter.Models
 
         public List<PlcLibraryReference> References { get; set; } = new List<PlcLibraryReference> { };
 
+        public List<TwinCATModuleClass> ModuleClasses { get; set; } = new List<TwinCATModuleClass> { };
+
+
+
         private PlcProject(string plcProjectFile)
         {
             CompletePathInFileSystem = plcProjectFile;
@@ -29,6 +35,7 @@ namespace TcUnit.TestAdapter.Models
             Name = FileNameInFileSystem.Replace(".plcproj", "");
 
             ParsePOUs();
+            ParseTMCs();
         }
 
         public static PlcProject ParseFromProjectFile(string plcProjectFile)
@@ -38,7 +45,7 @@ namespace TcUnit.TestAdapter.Models
                 throw new FileNotFoundException();
             }
 
-            if(!plcProjectFile.Contains(".plcproj"))
+            if (!plcProjectFile.Contains(".plcproj"))
             {
                 throw new ArgumentOutOfRangeException();
             }
@@ -48,11 +55,34 @@ namespace TcUnit.TestAdapter.Models
 
         public static XNamespace XmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
 
-        private void ParsePOUs ()
+
+        private void ParseTMCs()
         {
             var doc = XDocument.Load(CompletePathInFileSystem);
 
+            var nodes = doc.Elements(XmlNamespace + "Project")
+                            .Elements(XmlNamespace + "ItemGroup")
+                            .Elements(XmlNamespace + "None");
 
+            foreach (var node in nodes)
+            {
+                var relativePath = node.Attribute("Include")?.Value;
+                if (relativePath.EndsWith(".tmc"))
+                {
+                    var tmcFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
+
+                    if (File.Exists(tmcFilePath))
+                    {
+                        var tmc = TwinCATModuleClass.ParseFromFilePath(tmcFilePath);
+                        ModuleClasses.Add(tmc);
+                    }
+                }
+            }
+        }
+
+        private void ParsePOUs()
+        {
+            var doc = XDocument.Load(CompletePathInFileSystem);
 
             var nodes = doc.Elements(XmlNamespace + "Project")
                             .Elements(XmlNamespace + "ItemGroup")
@@ -61,7 +91,7 @@ namespace TcUnit.TestAdapter.Models
             foreach (var node in nodes)
             {
                 var relativePath = node.Attribute("Include")?.Value;
-                if (relativePath.Contains(".TcPOU"))
+                if (relativePath.EndsWith(".TcPOU"))
                 {
                     var pouFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
 
@@ -73,9 +103,13 @@ namespace TcUnit.TestAdapter.Models
                 }
             }
 
-            var plcReferences = doc.Elements(XmlNamespace + "Project")
-                                            .Elements(XmlNamespace + "ItemGroup")
-                                            .Elements(XmlNamespace + "PlaceholderReference");
+            // the following supports two different types of library references which may be used in a PLC project
+            XmlNamespaceManager ns = new XmlNamespaceManager(new NameTable());
+            ns.AddNamespace("prefix", XmlNamespace.NamespaceName);
+            var xpath = "//prefix:Project/prefix:ItemGroup/prefix:LibraryReference";
+            xpath += "|//prefix:Project/prefix:ItemGroup/prefix:PlaceholderReference";
+
+            var plcReferences = doc.XPathSelectElements(xpath, ns);
 
             foreach (var plcLibrary in plcReferences)
             {
@@ -83,26 +117,27 @@ namespace TcUnit.TestAdapter.Models
 
                 var reference = new PlcLibraryReference
                 {
-                    Name = name,
+                    Name = name.Split(',')[0],
                 };
 
-                var parameters = plcLibrary.Element(XmlNamespace + "Parameters");
+                var parameters = plcLibrary.ElementAnyNS("Parameters");
 
                 if (parameters == null)
                 {
                     continue;
                 }
 
-                foreach (var parameter in parameters.Elements(XmlNamespace + "Parameter"))
+                foreach (var parameter in parameters.ElementsAnyNS("Parameter"))
                 {
-                    var key = parameter.Element(XmlNamespace + "Key")?.Value;
-                    var value = parameter.Element(XmlNamespace + "Value")?.Value;
-               
+                    var key = parameter.ElementAnyNS("Key")?.Value;
+                    var value = parameter.ElementAnyNS("Value")?.Value;
+
                     reference.Parameters.Add(key, value);
                 }
-           
+
                 References.Add(reference);
             }
+
         }
     }
 }

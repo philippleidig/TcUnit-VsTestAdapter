@@ -13,6 +13,8 @@ namespace TcUnit.TestAdapter.Models
         {
             Name = name;
             Id = id;
+            Declaration = declaration;
+            Implementation = implementation;
         }
 
         public static Method_POU Parse(XElement xMethod)

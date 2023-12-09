@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+    <RunConfiguration>
+        <!-- Specify timeout in milliseconds. A valid value should be greater than 0 -->
+        <TestSessionTimeout>120000</TestSessionTimeout>
+        <TestAdaptersPaths>C:\Users\david.freiberger\source\repos\TcUnit-VsTestAdapter\src\TcUnit.TestAdapter\bin\Debug\netstandard2.0</TestAdaptersPaths>
+    </RunConfiguration>
+    <TcUnit>
+        <Target>172.18.232.132.1.1</Target> 
+        <CleanUpAfterTestRun>false</CleanUpAfterTestRun>
+    </TcUnit>
+</RunSettings>

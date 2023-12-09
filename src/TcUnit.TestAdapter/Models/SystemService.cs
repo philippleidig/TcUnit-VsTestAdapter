@@ -22,12 +22,15 @@ namespace TcUnit.TestAdapter.Models
 
         private readonly int DefaultChunkSize = 1024 * 1024;
 
-        public SystemService(string target)
+        public SystemService(AmsNetId target)
         {
-            this.target = target;
-            amsNetId = new AmsNetId(target);
+            this.target = target.ToString();
+            amsNetId = target;
             adsClient = new AdsClient();
             adsClient.Connect(target, (int)AmsPort.SystemService);
+        }
+        public SystemService(string target) : this(new AmsNetId(target))
+        {
         }
 
         public bool IsReachable()
@@ -40,6 +43,16 @@ namespace TcUnit.TestAdapter.Models
             adsClient.TryReadState(out StateInfo stateInfo);
 
             return stateInfo.AdsState != AdsState.Run || stateInfo.AdsState != AdsState.Config;
+        }
+
+        public void Connect()
+        {
+            adsClient.Connect(amsNetId, (int)AmsPort.SystemService);
+        }
+
+        public bool Disconnect()
+        {
+            return adsClient.Disconnect();
         }
 
         public void SwitchRuntimeState(AdsState newState)
@@ -71,9 +84,11 @@ namespace TcUnit.TestAdapter.Models
                     {
                         try
                         {
-                            while (adsClient.ReadState().AdsState != adsState)
+                            var currentState = adsClient.ReadState().AdsState;
+                            while (currentState != adsState)
                             {
-                                Thread.Sleep(500);
+                                currentState = adsClient.ReadState().AdsState;
+                                Thread.Sleep(1000);
                             }
                         }
                         catch
@@ -82,7 +97,7 @@ namespace TcUnit.TestAdapter.Models
                             {
                                 throw;
                             }
-                            adsClient.Connect(10000);
+                            adsClient.Connect(amsNetId, (int)AmsPort.SystemService);
                         }
                     }
                 }
@@ -150,7 +165,7 @@ namespace TcUnit.TestAdapter.Models
             return ctrl.CreateDirectory(name, AdsDirectory.PATH_BOOTPATH);
         }
 
-        public bool DirectoryExistsInBootFolder (string name)
+        public bool DirectoryExistsInBootFolder(string name)
         {
             AdsFileSystem ctrl = new AdsFileSystem();
 
@@ -160,7 +175,7 @@ namespace TcUnit.TestAdapter.Models
             return false;
         }
 
-        public bool FileExists (string filePath, AdsDirectory standardDirectory = AdsDirectory.PATH_GENERIC)
+        public bool FileExists(string filePath, AdsDirectory standardDirectory = AdsDirectory.PATH_GENERIC)
         {
             AdsFileSystem ctrl = new AdsFileSystem();
 
@@ -206,8 +221,11 @@ namespace TcUnit.TestAdapter.Models
 
             long totalSize = 0;
             bool successWrite = true;
-            while (br.PeekChar() != -1)
+            // use ReadByte instead of PeakChar because PeakChar sometimes fails on non UTF-8 files
+            while (br.BaseStream.ReadByte() != -1)
             {
+                br.BaseStream.Position -= 1;
+                
                 var buffer = new byte[DefaultChunkSize];
                 var readCount = default(int);
 
@@ -300,13 +318,16 @@ namespace TcUnit.TestAdapter.Models
             foreach (AdsFileSystemEntry f in files)
             {
                 string filepath = path + seperator + f.FileName;
+
                 var ret = true;
                 if (!IsValidFilename(f.FileName))
                     ;
                 else if (f.fileAttributes.Directory)
                 {
                     ret = DeleteDirectoryContentRecursive(filepath, seperator);
-                    ret = AdsFileSystem.RemoveDirectory(target, port, filepath, AdsDirectory.PATH_GENERIC);
+                    // for some reason deleting the Plc folder fails, so skip it
+                    if (f.FileName != "Plc")
+                        ret = AdsFileSystem.RemoveDirectory(target, port, filepath, AdsDirectory.PATH_GENERIC);
                 }
                 else
                 {

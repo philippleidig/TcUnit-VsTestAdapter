@@ -43,12 +43,16 @@ namespace TcUnit.TestAdapter.Discovery
             try
             {
                 var settings = discoveryContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
-                var testCaseFilter = new TestCaseFilter(discoveryContext);
+                
+                var testCaseFilter = new TestCaseFilter(discoveryContext, logger);
 
                 var project = TwinCATXAEProject.Load(sources.First());
 
-                var testCases = testRunner.DiscoverTests(project, logger)
-                                            .Where(t => testCaseFilter.MatchTestCase(t));
+                var testCases = testRunner.DiscoverTests(project, logger);
+
+                // currently can't filter test cases unless we have a run context
+                if (discoveryContext is IRunContext)
+                     testCases = testCases.Where(t => testCaseFilter.MatchTestCase(t));
 
                 foreach (var testCase in testCases)
                 {

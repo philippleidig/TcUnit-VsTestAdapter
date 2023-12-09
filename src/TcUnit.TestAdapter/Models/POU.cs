@@ -9,5 +9,7 @@ namespace TcUnit.TestAdapter.Models
         public string Name { get; set; }
         public Guid Id { get; set; }
         public string FilePath { get; set; }
+        public string Declaration { get; set; }
+        public string Implementation { get; set; }
     }
 }

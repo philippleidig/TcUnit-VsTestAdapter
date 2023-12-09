@@ -144,7 +144,7 @@ namespace TcUnit.TestAdapter.Common
         public static RTPlatform GetRTPlatform(string osName)
         {
 
-            if (osName.StartsWith("TC/BSD"))
+            if (osName.StartsWith("TC/BSD") || osName.StartsWith("TwinCAT/BSD"))
             {
                 return RTPlatform.TcBSD;
             }
@@ -153,6 +153,10 @@ namespace TcUnit.TestAdapter.Common
                 return RTPlatform.TcRTOS;
             }
             else if (osName.StartsWith("Windows 10"))
+            {
+                return RTPlatform.WinNT;
+            }
+            else if (osName.StartsWith("Windows 11"))
             {
                 return RTPlatform.WinNT;
             }

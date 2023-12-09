@@ -30,30 +30,64 @@ namespace TcUnit.TestAdapter.Execution
 
             foreach (var plcProject in project.PlcProjects)
             {
-                if(!IsPlcProjectSuitableForTestRun(plcProject))
+                try 
                 {
-                    logger.SendMessage(TestMessageLevel.Informational, "Found non suitable PLC project");
+                   CheckPlcProjectSuitableForTestRun(plcProject);
+                }
+                catch (Exception e)
+                { 
+                    logger.SendMessage(TestMessageLevel.Informational, $"Found non suitable PLC project for {plcProject.Name}: {e.Message}");
                     continue;
                 }
 
-                // find possible test suites and test cases
-                var testCases = plcProject.FunctionBlocks
-                        .Where(pou => pou.Extends == TestAdapter.TestSuiteBaseClass);
+                // assume single module class file
+                var tmc = plcProject.ModuleClasses[0];
 
-                foreach (var pou in testCases)
+                // find datatypes of type FB_TestSuite
+                var testSuiteDatatypes = tmc.DataTypes
+                    .Where(dataType => dataType.ExtendsType == TestAdapter.TestSuiteBaseClass);
+
+                // find PLC instances
+                var modules = tmc.Modules
+                    .Where(module => module.TcSmClass == TestAdapter.PlcObjClass);
+
+                foreach (var module in modules)
                 {
-                    var testSuite = TestSuite.ParseFromFunctionBlock(pou);
-
-                    foreach (var testMethod in testSuite.Tests)
+                    // each PLC may have multiple tasks
+                    foreach (var dataArea in module.DataAreas)
                     {
-                        var testName = plcProject.Name + "." + testMethod.Name;
+                        // find symbols matching the datatypes found above
+                        var symbols = dataArea.Symbols
+                            .Where(symbol => testSuiteDatatypes.Any(testSuiteDatatype => testSuiteDatatype.Name == symbol.BaseType));
 
-                        var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
-                        test.LineNumber = 0;
-                        test.CodeFilePath = pou.FilePath;
-                        test.DisplayName = testName;
+                        foreach (var symbol in symbols)
+                        {
+                            var symbolInstancePath = symbol.Name;
 
-                        tests.Add(test);
+                            // try to match with testsuite POUs
+                            var testSuiteFB = plcProject.FunctionBlocks
+                                .Where(pou => pou.Name == symbol.BaseType)
+                                .FirstOrDefault();
+
+                            if (testSuiteFB == null)
+                            {
+                                logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {symbol.BaseType} not found in PLC project {plcProject.Name}");
+                                continue;
+                            }
+
+                            var testSuite = TestSuite.ParseFromFunctionBlock(testSuiteFB);
+                            foreach (var testMethod in testSuite.Tests)
+                            {
+                                var testName = symbolInstancePath + "." + testMethod.Name;
+
+                                var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
+                                test.LineNumber = 0;
+                                test.CodeFilePath = testSuiteFB.FilePath;
+                                test.DisplayName = testName;
+
+                                tests.Add(test);
+                            }
+                        }
                     }
                 }
             }
@@ -64,23 +98,23 @@ namespace TcUnit.TestAdapter.Execution
         public TestRun RunTests(TwinCATXAEProject project, IEnumerable<TestCase> tests, TestSettings runSettings, IMessageLogger logger)
         {
 
-            if(!project.IsProjectPreBuild)
+            if (!project.IsProjectPreBuild)
             {
                 throw new Exception("TwinCAT XAE project is not pre build.");
             }
 
             if (!project.IsPlcProjectIncluded)
             {
-                throw new Exception("TwinCAT XAE project doas not contain at least one PLC projects.");
+                throw new Exception("TwinCAT XAE project does not contain at least one PLC project.");
             }
 
             var target = runSettings.Target;
             var cleanUpAfterTestRun = runSettings.CleanUpAfterTestRun;
             var cleanUpBeforeTestRun = true;
-           
+
             var targetRuntime = new TargetRuntime(target);
 
-            if(!targetRuntime.IsReachable)
+            if (!targetRuntime.IsReachable)
             {
                 throw new Exception("Target is not connected");
             }
@@ -98,7 +132,7 @@ namespace TcUnit.TestAdapter.Execution
             {
                 CleanUpTargetAfterTestRun(targetRuntime);
             }
-            
+
             stopWatch.Stop();
 
             var testRunDuration = stopWatch.Elapsed;
@@ -115,20 +149,20 @@ namespace TcUnit.TestAdapter.Execution
                     Target = target,
                     OperatingSystem = targetRuntime.Info.ImageOsName,
                     Duration = testRunDuration,
-                    BuildConfiguration = RTOperatingSystem.GetBuildConfigurationFromRTPlatform( targetRuntime.Info.RTPlatform )
+                    BuildConfiguration = RTOperatingSystem.GetBuildConfigurationFromRTPlatform(targetRuntime.Info.RTPlatform)
                 }
-            };   
+            };
 
             return testRun;
         }
 
-        private bool IsPlcProjectSuitableForTestRun (PlcProject project)
+        private void CheckPlcProjectSuitableForTestRun(PlcProject project)
         {
             var tcUnitLibraryReference = project.References.Where(r => r.Name == "TcUnit");
 
             if (!tcUnitLibraryReference.Any())
             {
-                return false;
+                throw NonSuitablePLCProjectException("TcUnit library not referenced");
             }
 
             var library = tcUnitLibraryReference.FirstOrDefault();
@@ -137,49 +171,35 @@ namespace TcUnit.TestAdapter.Execution
 
             if (!library.Parameters.TryGetValue("XUNITENABLEPUBLISH", out xUnitEnablePublish))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITENABLEPUBLISH parameter not found");
             }
 
-            if(string.IsNullOrEmpty(xUnitEnablePublish) || !xUnitEnablePublish.Equals("TRUE"))
+            if (string.IsNullOrEmpty(xUnitEnablePublish) || !xUnitEnablePublish.Equals("TRUE"))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITENABLEPUBLISH parameter not set to TRUE");
             }
 
             var xUnitFilePath = "";
 
             if (!library.Parameters.TryGetValue("XUNITFILEPATH", out xUnitFilePath))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITFILEPATH parameter not found");
             }
 
-            if (string.IsNullOrEmpty(xUnitFilePath) )
+            if (string.IsNullOrEmpty(xUnitFilePath))
             {
-                return false;
+                throw NonSuitablePLCProjectException("XUNITFILEPATH parameter not set");
             }
-
-            var useDataTypeAsTestNames = "";
-
-            if (!library.Parameters.TryGetValue("USEDATATYPESASTESTNAMES", out useDataTypeAsTestNames))
-            {
-                return false;
-            }
-
-            if (string.IsNullOrEmpty(useDataTypeAsTestNames) || !useDataTypeAsTestNames.Equals("TRUE"))
-            {
-                return false;
-            }
-
-            return true;
         }
 
-        private void PrepareTargetForTestRun (TargetRuntime target, TwinCATXAEProject project, bool cleanUpBeforeTestRun)
+        private void PrepareTargetForTestRun(TargetRuntime target, TwinCATXAEProject project, bool cleanUpBeforeTestRun)
         {
             target.SwitchToConfigMode();
             target.DownloadProject(project, cleanUpBeforeTestRun);
         }
 
 
-        private IEnumerable<TestResult> PopulateTestRunResults (IEnumerable<TestCase> testCases, IEnumerable<TestCaseResult> testResults)
+        private IEnumerable<TestResult> PopulateTestRunResults(IEnumerable<TestCase> testCases, IEnumerable<TestCaseResult> testResults)
         {
             var testRunResults = new List<TestResult>();
 
@@ -187,15 +207,14 @@ namespace TcUnit.TestAdapter.Execution
             {
                 var testResult = new TestResult(test);
 
-                var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
+                try {
+                    var result = testResults.Where(r => r.FullyQualifiedName == test.FullyQualifiedName).First();
 
-                if (result != null)
-                {
                     testResult.Outcome = result.Outcome;
                     testResult.Duration = result.Duration;
                     testResult.ErrorMessage = result.ErrorMessage;
                 }
-                else
+                catch
                 {
                     testResult.Outcome = TestOutcome.Skipped;
                 }
@@ -205,7 +224,7 @@ namespace TcUnit.TestAdapter.Execution
 
             return testRunResults;
         }
-        private void CleanUpTargetAfterTestRun (TargetRuntime target)
+        private void CleanUpTargetAfterTestRun(TargetRuntime target)
         {
             target.SwitchToConfigMode();
             target.CleanUpBootFolder();
@@ -214,7 +233,7 @@ namespace TcUnit.TestAdapter.Execution
         private void PerformTestRunOnTarget(TargetRuntime target)
         {
             target.SwitchToRunMode();
-
+            
             var isTestRunFinished = false;
 
             while (!isTestRunFinished)
@@ -224,13 +243,18 @@ namespace TcUnit.TestAdapter.Execution
             }
         }
 
-        private IEnumerable<TestCaseResult> CollectTestRunResultsFromTarget (TargetRuntime target)
+        private IEnumerable<TestCaseResult> CollectTestRunResultsFromTarget(TargetRuntime target)
         {
-            using(MemoryStream  ms = new MemoryStream())
+            using (MemoryStream ms = new MemoryStream())
             {
                 target.UploadTestRunResults(ms);
                 return testResultParser.Parse(ms);
             }
+        }
+
+        public Exception NonSuitablePLCProjectException(string message)
+        {
+            throw new Exception(message);
         }
     }
 }

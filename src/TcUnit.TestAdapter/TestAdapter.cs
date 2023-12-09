@@ -11,7 +11,7 @@ namespace TcUnit.TestAdapter
         public const string PlcProjFileExtension = ".plcproj";
         public const string TsProjFileExtension = ".tsproj";
 
-        public const string TestResultPath = @"tcunit_testresults.xml"; 
+        public const string TestResultPath = @"tcunit_testresults.xml";
 
         public const string RunSettingsName = "TcUnit";
 
@@ -20,6 +20,6 @@ namespace TcUnit.TestAdapter
         public const string DefaultTargetRuntime = "127.0.0.1.1.1";
         public const bool DefaultCleanUpAfterTestRun = true;
 
-
+        public const string PlcObjClass = "TComPlcObjDef";
     }
 }

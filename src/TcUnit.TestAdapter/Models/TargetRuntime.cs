@@ -23,6 +23,11 @@ namespace TcUnit.TestAdapter.Models
             Info = systemService.GetDeviceInfo();
         }
 
+        public bool Disconnect()
+        {
+            return systemService.Disconnect();
+        }
+
         public bool IsReachable => systemService.IsReachable();
 
         public void SwitchToConfigMode()
@@ -43,11 +48,12 @@ namespace TcUnit.TestAdapter.Models
                 throw new ArgumentNullException("Project is not prebuild");
             }
 
-            var bootProjects = xaeProject.BootProjects.Where(p => p.RTPlatform.Equals(Info.RTPlatform));
+            var bootProjects = xaeProject.BootProjects.Where(p => RTOperatingSystem.AvailableRTPlattforms[p.RTPlatform] == RTOperatingSystem.AvailableRTPlattforms[Info.RTPlatform]);
 
             if (!bootProjects.Any())
             {
-                throw new ArgumentOutOfRangeException("Could not find the corresponding TwinCAT target plattform in the prebuild boot projects: " + Info.RTPlatform.ToString());
+                var availableBootProjects = string.Join(", ", xaeProject.BootProjects.Select(p => p.RTPlatform.ToString()));
+                throw new ArgumentOutOfRangeException($"Could not find the corresponding TwinCAT target platform in the prebuild boot projects. Platform name: {Info.RTPlatform}. Available boot projects: {availableBootProjects}");
             }
             var bootProject = bootProjects.FirstOrDefault();
 
@@ -108,7 +114,7 @@ namespace TcUnit.TestAdapter.Models
                 {
                     if (!systemService.CreateDirectoryInBootFolder("Plc"))
                     {
-                        throw new Exception("Could not create /Boot/Plc folder on target.");
+                        //throw new Exception("Could not create /Boot/Plc folder on target.");
                     }
                 }
             }

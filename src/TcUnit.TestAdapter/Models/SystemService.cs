@@ -186,6 +186,7 @@ namespace TcUnit.TestAdapter.Models
 
             if (handle > 0)
             {
+                ctrl.CloseFile(handle);
                 return true;
             }
 

@@ -34,19 +34,38 @@ namespace TcUnit.TestAdapter.Models
         [TestMethod]
         public void FileExistsInBootFolderTests()
         {
+            var testFile = CreateTemporaryFile("TestFile.txt");
+
             var systemService = new SystemService(AmsNetId.LocalHost);
 
-            Assert.IsTrue(systemService.FileExistsInBootFolder("CurrentConfig.xml"));
+            Assert.IsTrue(systemService.FileExistsInBootFolder("TestFile.txt"));
+
+            File.Delete(testFile);
         }
 
         [TestMethod]
         public void CleanUpBootFolder()
         {
+            var testFile = CreateTemporaryFile("TestFile.txt");
+
             var systemService = new SystemService(AmsNetId.LocalHost);
             var targetInfo = systemService.GetDeviceInfo();
             systemService.CleanUpBootDirectory(targetInfo.ImageOsName);
 
-            Assert.IsFalse(systemService.FileExistsInBootFolder("CurrentConfig.xml"));
+            Assert.IsFalse(systemService.FileExistsInBootFolder("TestFile.txt"));
+        }
+
+        private string CreateTemporaryFile(string name)
+        {
+            var bootDir = Registry.GetValue(@"HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Beckhoff\TwinCAT3\3.1", "BootDir", null);
+
+            if (bootDir == null)
+                Assert.Fail("BootDir not found in registry");
+
+            var testFilePath = Path.Combine(bootDir.ToString(), name);
+            File.WriteAllText(testFilePath, "Test");
+
+            return testFilePath;
         }
     }
 }

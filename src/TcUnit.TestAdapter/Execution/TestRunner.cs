@@ -40,6 +40,13 @@ namespace TcUnit.TestAdapter.Execution
                 var testSuiteDatatypes = tmc.DataTypes
                     .Where(dataType => dataType.ExtendsType == TestAdapter.TestSuiteBaseClass);
 
+                // get a list of names
+                var testSuiteDatatypeNames = testSuiteDatatypes.Select(dataType => dataType.Name).ToList();
+
+                // find datatypes with subitems matching FB_TestSuite base type
+                var testSuiteParentDatatypes = tmc.DataTypes
+                    .Where(dataType => dataType.SubItems.Any(subItem => testSuiteDatatypeNames.Contains(subItem.Type)));
+
                 // find PLC instances
                 var modules = tmc.Modules
                     .Where(module => module.TcSmClass == TestAdapter.PlcObjClass);
@@ -80,6 +87,50 @@ namespace TcUnit.TestAdapter.Execution
 
                                 tests.Add(test);
                             }
+                        }
+
+                        // find symbols matching the parent datatype
+                        var parentSymbols = dataArea.Symbols
+                            .Where(symbol => testSuiteParentDatatypes.Any(testSuiteParentDatatype => testSuiteParentDatatype.Name == symbol.BaseType));
+
+                        foreach (var parentSymbol in parentSymbols) {
+                            var parentSymbolInstancePath = parentSymbol.Name;
+
+                            // parent datatype
+                            var parentDataType = testSuiteParentDatatypes
+                                .Where(dataType => dataType.Name == parentSymbol.BaseType)
+                                .FirstOrDefault();
+
+                            // find all the subitems of the parent datatype where the sub item exists in the list of test suite datatypes
+                            var subItems = parentDataType.SubItems
+                                .Where(subItem => testSuiteDatatypeNames.Contains(subItem.Type));
+
+                            // try to match subitem with testsuite POUs
+                            foreach (var subItem in subItems)
+                            {
+                                var testSuiteFB = plcProject.FunctionBlocks
+                                    .Where(pou => pou.Name == subItem.Type)
+                                    .FirstOrDefault();
+
+                                if (testSuiteFB == null)
+                                {
+                                    logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {subItem.Type} not found in PLC project {plcProject.Name}");
+                                    continue;
+                                }
+
+                                var testSuite = TestSuite.ParseFromFunctionBlock(testSuiteFB);
+                                foreach (var testMethod in testSuite.Tests)
+                                {
+                                    var testName = parentSymbolInstancePath + "." + subItem.Name + "." + testMethod.Name;
+
+                                    var test = new TestCase(testName, TestAdapter.ExecutorUri, project.FilePath);
+                                    test.LineNumber = 0;
+                                    test.CodeFilePath = testSuiteFB.FilePath;
+                                    test.DisplayName = testName;
+
+                                    tests.Add(test);
+                                }
+                            }   
                         }
                     }
                 }

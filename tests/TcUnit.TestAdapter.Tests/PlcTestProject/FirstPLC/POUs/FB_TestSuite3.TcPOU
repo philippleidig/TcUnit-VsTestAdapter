@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_TestSuite3" Id="{4d879f8a-fdf2-40c8-8f49-cdcf59bed915}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSuite3 EXTENDS FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TestCase3A();]]></ST>
+    </Implementation>
+    <Method Name="TestCase3A" Id="{ba8412ed-a485-4e34-a3cb-2c0117f9ef9e}">
+      <Declaration><![CDATA[METHOD TestCase3A
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestCase3A');
+
+AssertTrue(TRUE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

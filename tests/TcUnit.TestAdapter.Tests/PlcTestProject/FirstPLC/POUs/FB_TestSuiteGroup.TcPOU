@@ -1,9 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.9">
   <POU Name="FB_TestSuiteGroup" Id="{0f5f66b5-a14b-4e9c-b940-1dbbd259c922}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSuiteGroup
 VAR
     fbTestSuite3Instance1 : FB_TestSuite3;
+    fbTestSuite3Instance2 : FB_TestSuite3;
 END_VAR
 ]]></Declaration>
     <Implementation>

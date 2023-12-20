@@ -42,6 +42,9 @@ namespace TcUnit.TestAdapter.Execution
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2B",
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2C",
               "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance1.TestCase3A",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance1.TestCase3B",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance2.TestCase3A",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance2.TestCase3B"
             };
 
             Assert.IsTrue(testCases.Count() == testCaseNames.Count);
@@ -77,7 +80,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            Assert.IsTrue(testRun.Results.Count() == 14);
+            Assert.IsTrue(testRun.Results.Count() == 17);
         }
     }
 }

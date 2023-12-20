@@ -31,7 +31,7 @@ namespace TcUnit.TestAdapter.Tests
             testDiscoverer.DiscoverTests(testSources, mockDiscoveryContext, mockLogger, testCaseDiscoverySink);
 
             // Assert
-            Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 14); 
+            Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 17); 
         }
     }
 

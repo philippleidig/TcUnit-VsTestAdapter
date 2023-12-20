@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.53" ClassName="CNestedPlcProjDef">
+<TcSmItem xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2012/07/TcSmProject" TcSmVersion="1.0" TcVersion="3.1.4024.20" ClassName="CNestedPlcProjDef">
 	<Project GUID="{EA0D0955-5CCE-458C-A009-A6F77B8A0B99}" Name="FirstPLC" PrjFilePath="..\..\FirstPLC\FirstPLC.plcproj" TmcFilePath="..\..\FirstPLC\FirstPLC.tmc" ReloadTmc="true" AmsPort="851" TargetArchiveSettings="#x0000" FileArchiveSettings="#x0000">
-		<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="FirstPLC\FirstPLC.tmc" TmcHash="{567DD1C9-3BC9-A471-05A4-6EC2E25F477A}">
+		<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="FirstPLC\FirstPLC.tmc">
 			<Name>FirstPLC Instance</Name>
 			<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 			<Contexts>
 				<Context>
-					<Id>0</Id>
+					<Id NeedCalleeCall="true">0</Id>
 					<Name>PlcTask2</Name>
 					<ManualConfig>
 						<OTCID>#x02010040</OTCID>
@@ -15,7 +15,7 @@
 					<CycleTime>10000000</CycleTime>
 				</Context>
 				<Context>
-					<Id>1</Id>
+					<Id NeedCalleeCall="true">1</Id>
 					<Name>PlcTask</Name>
 					<ManualConfig>
 						<OTCID>#x02010030</OTCID>

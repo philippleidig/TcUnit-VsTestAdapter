@@ -51,9 +51,9 @@ namespace TcUnit.TestAdapter.Models
             return adsClient.Disconnect();
         }
 
-        public void SwitchRuntimeState(AdsStateCommand state)
+        public void SwitchRuntimeState(AdsStateCommand state, TimeSpan timeout)
         {
-            adsClient.SetAdsState(state, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), false, false);
+            adsClient.SetAdsState(state, TimeSpan.FromSeconds(1), timeout, false, false);
         }
 
         public Version GetVersionInfo()

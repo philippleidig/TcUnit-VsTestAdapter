@@ -26,14 +26,14 @@ namespace TcUnit.TestAdapter.Models
 
         public bool IsReachable => systemService.IsReachable();
 
-        public void SwitchToConfigMode()
+        public void SwitchToConfigMode(TimeSpan timeout)
         {
-            systemService.SwitchRuntimeState(AdsState.Reconfig);
+            systemService.SwitchRuntimeState(AdsStateCommand.Reconfig, timeout);
         }
 
-        public void SwitchToRunMode()
+        public void SwitchToRunMode(TimeSpan timeout)
         {
-            systemService.SwitchRuntimeState(AdsState.Reset);
+            systemService.SwitchRuntimeState(AdsStateCommand.Reset, timeout);
         }
 
         public void DownloadProject(TwinCATXAEProject xaeProject, bool cleanBeforeDownload = true)

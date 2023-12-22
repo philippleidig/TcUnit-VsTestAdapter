@@ -9,13 +9,11 @@ namespace TcUnit.TestAdapter.Models
     {
         private List<TwinCATBootProject> _bootProjects;
         private List<PlcProject> _plcProjects;
+
         public IEnumerable<TwinCATBootProject> BootProjects => _bootProjects;
         public IEnumerable<PlcProject> PlcProjects => _plcProjects;
-
         public bool IsProjectPreBuild => BootProjects.Count() > 0;
-
         public bool IsPlcProjectIncluded => PlcProjects.Count() > 0;
-
         public string ProjectFolder { get; private set; }
         public string FilePath { get; private set; }
 

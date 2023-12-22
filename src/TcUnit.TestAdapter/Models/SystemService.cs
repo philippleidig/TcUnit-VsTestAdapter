@@ -1,15 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
-using System.Net.NetworkInformation;
-using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Xml;
 using TcUnit.TestAdapter.Common;
 using TwinCAT.Ads;
+using TwinCAT.Ads.Extensions;
 using static TcUnit.TestAdapter.Models.AdsFileSystemTypes;
 
 namespace TcUnit.TestAdapter.Models
@@ -47,6 +42,7 @@ namespace TcUnit.TestAdapter.Models
 
         public void Connect()
         {
+            adsClient.Timeout = 1000;
             adsClient.Connect(amsNetId, (int)AmsPort.SystemService);
         }
 
@@ -55,53 +51,9 @@ namespace TcUnit.TestAdapter.Models
             return adsClient.Disconnect();
         }
 
-        public void SwitchRuntimeState(AdsState newState)
+        public void SwitchRuntimeState(AdsStateCommand state)
         {
-            StateInfo stateInfo = default;
-
-            AdsState adsState = AdsState.Invalid;
-
-            if (newState != AdsState.Reset)
-            {
-                if (newState == AdsState.Reconfig)
-                {
-                    adsState = AdsState.Config;
-                }
-            }
-            else
-            {
-                adsState = AdsState.Run;
-            }
-
-            if (!(adsClient.ReadState().AdsState == adsState))
-            {
-                stateInfo.AdsState = newState;
-                adsClient.WriteControl(stateInfo);
-
-                if (adsState > AdsState.Invalid)
-                {
-                    for (int i = 0; i < 3; i++)
-                    {
-                        try
-                        {
-                            var currentState = adsClient.ReadState().AdsState;
-                            while (currentState != adsState)
-                            {
-                                currentState = adsClient.ReadState().AdsState;
-                                Thread.Sleep(1000);
-                            }
-                        }
-                        catch
-                        {
-                            if (i == 2)
-                            {
-                                throw;
-                            }
-                            adsClient.Connect(amsNetId, (int)AmsPort.SystemService);
-                        }
-                    }
-                }
-            }
+            adsClient.SetAdsState(state, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(5), false, false);
         }
 
         public Version GetVersionInfo()

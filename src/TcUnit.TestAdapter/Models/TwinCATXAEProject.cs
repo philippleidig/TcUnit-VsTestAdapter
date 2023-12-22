@@ -46,10 +46,10 @@ namespace TcUnit.TestAdapter.Models
             {
                 var platformName = Path.GetFileName(platform);
 
-                if (Common.RTOperatingSystem.AvailableRTPlattforms.Values.Contains(plattformName))
+                if (Common.RTOperatingSystem.AvailableRTPlattforms.Values.Contains(platformName))
                 {
-                    var bootProjectPath = Path.Combine(bootProjectFolder, plattform);
-                    var bootProject = TwinCATBootProject.ParseFromLocalProjectBuildFolder(bootProjectPath);
+                    var bootProjectPath = Path.Combine(bootProjectFolder, platformName);
+                    var bootProject = TwinCATBootProject.Load(bootProjectPath);
                     _bootProjects.Add(bootProject);
                 }
             }

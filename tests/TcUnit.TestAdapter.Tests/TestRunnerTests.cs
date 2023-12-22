@@ -41,6 +41,10 @@ namespace TcUnit.TestAdapter.Execution
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2A",
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2B",
               "PRG_TESTS.fbTestSuite2Instance2.TestCase2C",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance1.TestCase3A",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance1.TestCase3B",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance2.TestCase3A",
+              "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance2.TestCase3B"
             };
 
             Assert.IsTrue(testCases.Count() == testCaseNames.Count);
@@ -61,7 +65,7 @@ namespace TcUnit.TestAdapter.Execution
 
 
             var settings = new TestSettings();
-            settings.Target = "127.0.0.1.1.1";  //"192.168.4.1.1.1";
+            settings.Target = "127.0.0.1.1.1";
             settings.CleanUpAfterTestRun = true;
 
             // attempt to clean up the target boot folder
@@ -76,7 +80,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            Assert.IsTrue(testRun.Results.Count() == 13);
+            Assert.IsTrue(testRun.Results.Count() == 17);
         }
     }
 }

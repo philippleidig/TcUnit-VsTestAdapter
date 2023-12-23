@@ -43,7 +43,7 @@ namespace TcUnit.TestAdapter.Services
             adsClient.Connect(amsNetId, (int)AmsPort.Logger);
             adsClient.AdsNotification += OnEventOccured;
 
-            var settings = new NotificationSettings(AdsTransMode.OnChange, 0, 0);
+            var settings = new NotificationSettings(AdsTransMode.CyclicInContext, 0, 0);
             handle = adsClient.AddDeviceNotification(0x1, 0xffff, 1024, settings, null);        
         }
 
@@ -72,10 +72,10 @@ namespace TcUnit.TestAdapter.Services
                     var logLevel = (AdsLogLevel)reader.ReadInt32();
                     var senderPort = reader.ReadInt32();
                     var senderData = reader.ReadBytes(16);
-                    var sender = System.Text.Encoding.UTF8.GetString(senderData).Trim();
+                    var sender = System.Text.Encoding.UTF8.GetString(senderData).Trim('\0');
                     var messageLength = reader.ReadInt32();
                     var messageData = reader.ReadBytes(messageLength);
-                    var message = System.Text.Encoding.UTF8.GetString(messageData).Trim(); ;
+                    var message = System.Text.Encoding.UTF8.GetString(messageData).Trim('\0');
 
                     return new AdsLogEntry
                     {

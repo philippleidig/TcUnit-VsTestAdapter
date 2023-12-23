@@ -10,6 +10,7 @@ using Castle.Core.Logging;
 using Moq;
 using TcUnit.TestAdapter.RunSettings;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using TwinCAT.Ads;
 
 namespace TcUnit.TestAdapter.Execution
 {
@@ -69,9 +70,10 @@ namespace TcUnit.TestAdapter.Execution
             settings.CleanUpAfterTestRun = true;
 
             // attempt to clean up the target boot folder
-            var systemService = new SystemService(settings.Target);
+            var target = AmsNetId.Parse(settings.Target);
+            var systemService = new TwinCATSystemService(target);
             var targetInfo = systemService.GetDeviceInfo();
-            systemService.SwitchRuntimeState(TwinCAT.Ads.AdsState.Reconfig);
+            systemService.SwitchRuntimeState(AdsStateCommand.Reconfig, TimeSpan.FromSeconds(10));
             systemService.CleanUpBootDirectory(targetInfo.ImageOsName);
             systemService.Disconnect();
             

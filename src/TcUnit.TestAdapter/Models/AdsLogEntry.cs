@@ -18,12 +18,17 @@ namespace TcUnit.TestAdapter.Models
         LBRERROR = 116
     }
 
-    public struct AdsLogEntry
+    public class AdsLogEntry
     {
         public DateTime TimeRaised;
         public AdsLogLevel LogLevel;
         public int AdsPort;
         public string Sender;
         public string Message;
+
+        public override string ToString()
+        {
+            return string.Format("{0} ({1}): {2}", Sender, AdsPort, Message);
+        }
     }
 }

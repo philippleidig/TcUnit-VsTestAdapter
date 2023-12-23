@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using TcUnit.TestAdapter.Common;
+
 using TwinCAT.Ads;
 using TwinCAT.Ads.Extensions;
 using static TcUnit.TestAdapter.Models.AdsFileSystemTypes;
 
 namespace TcUnit.TestAdapter.Models
 {
-    public class SystemService
+    public class TwinCATSystemService
     {
         private readonly string target;
         private readonly AdsClient adsClient;
@@ -17,15 +17,13 @@ namespace TcUnit.TestAdapter.Models
 
         private readonly int DefaultChunkSize = 1024 * 1024;
 
-        public SystemService(AmsNetId target)
+        public TwinCATSystemService(AmsNetId target)
         {
             this.target = target.ToString();
             amsNetId = target;
             adsClient = new AdsClient();
-            adsClient.Connect(target, (int)AmsPort.SystemService);
-        }
-        public SystemService(string target) : this(new AmsNetId(target))
-        {
+
+            Connect();
         }
 
         public bool IsReachable()
@@ -42,7 +40,7 @@ namespace TcUnit.TestAdapter.Models
 
         public void Connect()
         {
-            adsClient.Timeout = 1000;
+            adsClient.Timeout = (int)TimeSpan.FromMilliseconds(500).TotalMilliseconds;
             adsClient.Connect(amsNetId, (int)AmsPort.SystemService);
         }
 
@@ -51,9 +49,10 @@ namespace TcUnit.TestAdapter.Models
             return adsClient.Disconnect();
         }
 
-        public void SwitchRuntimeState(AdsStateCommand state, TimeSpan timeout)
+        public bool SwitchRuntimeState(AdsStateCommand state, TimeSpan timeout)
         {
-            adsClient.SetAdsState(state, TimeSpan.FromSeconds(1), timeout, false, false);
+            var result = adsClient.SetAdsState(state, TimeSpan.FromMilliseconds(500), timeout, true, false);
+            return result.RequestSucceeded;
         }
 
         public Version GetVersionInfo()
@@ -104,6 +103,23 @@ namespace TcUnit.TestAdapter.Models
             catch (Exception ex)
             {
                 return "";
+            }
+        }
+
+        public Tuple<int, int> GetRealtimeSettings()
+        {
+            byte[] data = new byte[64];
+            Memory<byte> readData = new Memory<byte>(data);
+
+            using (AdsClient adsClient = new AdsClient())
+            {
+                adsClient.Connect(amsNetId, AmsPort.R0_Realtime);
+                adsClient.Read(0x1, 0xD, readData);
+
+                var sharedCpuCores = BitConverter.ToInt32(data, 0);
+                var isolatedCpuCores = BitConverter.ToInt32(data, 4);
+
+                return new Tuple<int, int>(sharedCpuCores, isolatedCpuCores);
             }
         }
 
@@ -249,7 +265,7 @@ namespace TcUnit.TestAdapter.Models
 
         public bool CleanUpBootDirectory(string osName)
         {
-            string bootfolder = RTOperatingSystem.GetBootProjFolderByOsName(osName);
+            string bootfolder = Common.RTOperatingSystem.GetBootProjFolderByOsName(osName);
 
             var ret = DeleteDirectoryContentRecursive(bootfolder, osName);
 
@@ -258,7 +274,7 @@ namespace TcUnit.TestAdapter.Models
 
         public bool DeleteDirectoryContentRecursive(string path, string osName)
         {
-            string seperator = RTOperatingSystem.GetSeperatorByOsName(osName);
+            string seperator = Common.RTOperatingSystem.GetSeperatorByOsName(osName);
 
             int port = (int)TwinCAT.Ads.AmsPort.SystemService;
             bool return_value = true;

@@ -22,5 +22,9 @@ namespace TcUnit.TestAdapter.Models
 
         public Version TwinCATVersion { get; set; }
 
+        public bool IsTwinCATBSD => RTPlatform.Equals(RTPlatform.TcBSD);
+        public bool IsWindowsNT => RTPlatform.Equals(RTPlatform.WinNT);
+        public bool IsWindowsCE => RTPlatform.Equals(RTPlatform.WinCE);
+
     }
 }

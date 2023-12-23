@@ -10,6 +10,7 @@ using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Common;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
+using TwinCAT.Ads;
 
 namespace TcUnit.TestAdapter.Execution
 {
@@ -152,16 +153,26 @@ namespace TcUnit.TestAdapter.Execution
                 throw new Exception("TwinCAT XAE project does not contain at least one PLC project.");
             }
 
-            var target = runSettings.Target;
+            var target = AmsNetId.Parse(runSettings.Target);
             var cleanUpAfterTestRun = runSettings.CleanUpAfterTestRun;
             var cleanUpBeforeTestRun = true;
+
+            if(AmsNetId.LocalHost != target && AmsNetId.Local != target)
+            {
+                var adsRemoteRoutes = TwinCATEnvironment.GetRemoteRoutes();
+                var targetRoute = adsRemoteRoutes.Where(r => r.NetId.Equals(target));
+
+                if (!targetRoute.Any())
+                    throw new Exception("No ADS route to target found.");
+            }
 
             var targetRuntime = new TargetRuntime(target);
 
             if (!targetRuntime.IsReachable)
-            {
-                throw new Exception("Target is not connected");
-            }
+                throw new Exception("Target runtime is not reachable.");
+
+            if (!project.IsSuitableForTarget(targetRuntime))
+                throw new Exception("XAE project is not suitable for target runtime (e.g. different RT settings).");
 
             var stopWatch = new Stopwatch();
             stopWatch.Start();
@@ -176,6 +187,8 @@ namespace TcUnit.TestAdapter.Execution
             {
                 CleanUpTargetAfterTestRun(targetRuntime);
             }
+
+            targetRuntime.Disconnect();
 
             stopWatch.Stop();
 
@@ -213,7 +226,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var xUnitEnablePublish = "";
 
-            if (!library.Parameters.TryGetValue("XUNITENABLEPUBLISH", out xUnitEnablePublish))
+            if (!library.TryGetParameterValue("XUNITENABLEPUBLISH", out xUnitEnablePublish))
             {
                 throw NonSuitablePLCProjectException("XUNITENABLEPUBLISH parameter not found");
             }
@@ -225,7 +238,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var xUnitFilePath = "";
 
-            if (!library.Parameters.TryGetValue("XUNITFILEPATH", out xUnitFilePath))
+            if (!library.TryGetParameterValue("XUNITFILEPATH", out xUnitFilePath))
             {
                 throw NonSuitablePLCProjectException("XUNITFILEPATH parameter not found");
             }
@@ -238,10 +251,9 @@ namespace TcUnit.TestAdapter.Execution
 
         private void PrepareTargetForTestRun(TargetRuntime target, TwinCATXAEProject project, bool cleanUpBeforeTestRun)
         {
-            target.SwitchToConfigMode();
+            target.SwitchToConfigMode(TimeSpan.FromSeconds(10));
             target.DownloadProject(project, cleanUpBeforeTestRun);
         }
-
 
         private IEnumerable<TestResult> PopulateTestRunResults(IEnumerable<TestCase> testCases, IEnumerable<TestCaseResult> testResults)
         {
@@ -270,13 +282,13 @@ namespace TcUnit.TestAdapter.Execution
         }
         private void CleanUpTargetAfterTestRun(TargetRuntime target)
         {
-            target.SwitchToConfigMode();
+            target.SwitchToConfigMode(TimeSpan.FromSeconds(10));
             target.CleanUpBootFolder();
         }
 
         private void PerformTestRunOnTarget(TargetRuntime target)
         {
-            target.SwitchToRunMode();
+            target.SwitchToRunMode(TimeSpan.FromSeconds(10));
             
             var isTestRunFinished = false;
 

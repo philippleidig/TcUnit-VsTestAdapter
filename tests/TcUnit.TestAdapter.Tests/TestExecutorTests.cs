@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace TcUnit.TestAdapter.Tests
 {
-    internal class TestExecutorTests : TestContainer
+    internal class TestExecutorTests 
     {
     }
 }

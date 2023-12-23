@@ -13,7 +13,7 @@ using TcUnit.TestAdapter.Discovery;
 namespace TcUnit.TestAdapter.Tests
 {
     [TestClass]
-    public class TestDiscovererTests : TestContainer
+    public class TestDiscovererTests
     {
         [TestMethod]
         public void TestDiscoverTests()

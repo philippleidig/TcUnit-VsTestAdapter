@@ -17,10 +17,8 @@ namespace TcUnit.TestAdapter.RunSettings
 
         }
 
-        [DefaultValue(TestAdapter.DefaultTargetRuntime)]
-        public string Target { get; set; }
+        public string Target { get; set; } 
 
-        [DefaultValue(TestAdapter.DefaultCleanUpAfterTestRun)]
         public bool CleanUpAfterTestRun { get; set; }
 
         public override XmlElement ToXml()

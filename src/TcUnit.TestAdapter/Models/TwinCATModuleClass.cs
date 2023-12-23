@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Xml.Linq;
 
 namespace TcUnit.TestAdapter.Models
@@ -14,7 +13,6 @@ namespace TcUnit.TestAdapter.Models
         public string Name { get; set; }
 
         public List<TmcDataType> DataTypes { get; set; } = new List<TmcDataType>();
-
         public List<TmcModule> Modules { get; set; } = new List<TmcModule> { };
 
 

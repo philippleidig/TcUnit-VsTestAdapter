@@ -65,7 +65,7 @@ namespace TcUnit.TestAdapter.Models
                 int.TryParse(realtimeSettings.Attribute("NonWinCpus")?.Value, out int isolatedCpuCount);
                 var sharedCpuCount = maxCpuCount - isolatedCpuCount;
 
-                RealtimeSettings = new Tuple<int,int>(maxCpuCount, isolatedCpuCount);
+                RealtimeSettings = new Tuple<int,int>(sharedCpuCount, isolatedCpuCount);
             }
         }
 

@@ -19,7 +19,7 @@ namespace TcUnit.TestAdapter.RunSettings
             CleanUpAfterTestRun = TestAdapter.DefaultCleanUpAfterTestRun;
         }
 
-        public string Target { get; set; }
+        public string Target { get; set; } 
         public bool CleanUpAfterTestRun { get; set; }
 
         public override XmlElement ToXml()

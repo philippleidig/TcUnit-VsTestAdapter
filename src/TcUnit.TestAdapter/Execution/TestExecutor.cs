@@ -1,10 +1,11 @@
 ﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
+
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Execution;
@@ -17,10 +18,7 @@ namespace TcUnit.TestAdapter
     public class TestExecutor : ITestExecutor
     {
         private readonly ITestRunner testRunner;
-        private readonly CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
-        private readonly object obj = new object();
-
-        private bool _isCancelled;
+        private TestRunCancellationToken _cancellationToken;
 
         public TestExecutor ()
         {
@@ -34,24 +32,14 @@ namespace TcUnit.TestAdapter
 
         public void Cancel()
         {
-            lock (obj)
-            {
-                cancellationTokenSource.Cancel();
-                _isCancelled = true;
-            }
+            _cancellationToken?.Cancel();
         }
 
         public void RunTests(IEnumerable<string> sources, IRunContext runContext, IFrameworkHandle frameworkHandle)
         {
-            ValidateArg.NotNull(sources, nameof(sources));
+            ValidateArg.NotNullOrEmpty(sources, nameof(sources));
             ValidateArg.NotNull(runContext, nameof(runContext));
             ValidateArg.NotNull(frameworkHandle, nameof(frameworkHandle));
-
-
-            if (sources.Count() > 1)
-            {
-                throw new NotSupportedException("Only one TwinCAT XAE project (*.tsproj) is supported.");
-            }
 
             try
             {
@@ -64,12 +52,14 @@ namespace TcUnit.TestAdapter
                                             .Where(t => testCaseFilter.MatchTestCase(t));
                
                 if (!tests.Any())
-                {
                     throw new ArgumentOutOfRangeException("Source does not contain any test case.");
-                }
-               
+
+                _cancellationToken = new TestRunCancellationToken();
+
                 var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle);
-               
+
+                _cancellationToken = null;
+
                 PrintRunConditions(frameworkHandle, testRun.Conditions);
                
                 foreach(var testResult in testRun.Results)
@@ -83,7 +73,12 @@ namespace TcUnit.TestAdapter
             }
         }
 
-        private void PrintRunConditions (IMessageLogger logger, TestRunConditions conditions)
+        public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
+        {
+            var sources = tests.Select(test => test.Source).Distinct();
+            RunTests(sources, runContext, frameworkHandle);
+        }
+        private void PrintRunConditions(IMessageLogger logger, TestRunConditions conditions)
         {
             logger.SendMessage(TestMessageLevel.Informational, "--------------------------------------------------------------");
             logger.SendMessage(TestMessageLevel.Informational, "Test Run Conditions:");
@@ -94,12 +89,5 @@ namespace TcUnit.TestAdapter
             logger.SendMessage(TestMessageLevel.Informational, "    Configuration: " + conditions.BuildConfiguration);
             logger.SendMessage(TestMessageLevel.Informational, "--------------------------------------------------------------");
         }
-
-        public void RunTests(IEnumerable<TestCase> tests, IRunContext runContext, IFrameworkHandle frameworkHandle)
-        {
-            var sources = tests.Select(test => test.Source).Distinct();
-            RunTests(sources, runContext, frameworkHandle);
-        }
-
     }
 }

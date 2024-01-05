@@ -3,7 +3,7 @@ using TwinCAT.Ads;
 
 namespace TcUnit.TestAdapter.Execution
 {
-    public class TestRunConditions
+    public class TestRunContext
     {
         public AmsNetId Target { get; set; }
         public string OperatingSystem { get; set; }

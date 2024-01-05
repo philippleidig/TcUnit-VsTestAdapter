@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+﻿using Microsoft.Extensions.Logging;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 
@@ -9,8 +10,10 @@ using System.Linq;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Discovery;
 using TcUnit.TestAdapter.Execution;
+using TcUnit.TestAdapter.Extensions;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace TcUnit.TestAdapter
 {
@@ -46,26 +49,41 @@ namespace TcUnit.TestAdapter
                 var settings = runContext.RunSettings?.GetTestSettings(TestAdapter.RunSettingsName);
                 var testCaseFilter = new TestCaseFilter(runContext, frameworkHandle);
 
-                var project = TwinCATXAEProject.Load(sources.First());
-
-                var tests = testRunner.DiscoverTests(project, frameworkHandle)
-                                            .Where(t => testCaseFilter.MatchTestCase(t));
-               
-                if (!tests.Any())
-                    throw new ArgumentOutOfRangeException("Source does not contain any test case.");
-
                 _cancellationToken = new TestRunCancellationToken();
 
-                var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle);
+                foreach (var source in sources)
+                {
+                    try
+                    {
+                        var project = TwinCATXAEProject.Load(source);
+                        var tests = testRunner.DiscoverTests(project, frameworkHandle)
+                                                  .Where(t => testCaseFilter.MatchTestCase(t));
+
+                        if (!tests.Any())
+                        {
+                            frameworkHandle.LogInformation("Source does not contain any test case.");
+                        }
+                        else
+                        {
+                            frameworkHandle.LogInformation( string.Format("Found {0} test cases in source {1}", tests.Count(), source));
+                        }
+
+                        var testRun = testRunner.RunTests(project, tests, settings, frameworkHandle);
+
+                        PrintRunConditions(frameworkHandle, source, testRun.Context);
+
+                        foreach (var testResult in testRun.Results)
+                        {
+                            frameworkHandle.RecordResult(testResult);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        frameworkHandle.LogError(string.Format("Failed to execute test run for source {0}.", source), ex);
+                    }
+                }
 
                 _cancellationToken = null;
-
-                PrintRunConditions(frameworkHandle, testRun.Conditions);
-               
-                foreach(var testResult in testRun.Results)
-                {
-                    frameworkHandle.RecordResult(testResult);
-                }
             }
             catch (Exception ex)
             {
@@ -78,16 +96,17 @@ namespace TcUnit.TestAdapter
             var sources = tests.Select(test => test.Source).Distinct();
             RunTests(sources, runContext, frameworkHandle);
         }
-        private void PrintRunConditions(IMessageLogger logger, TestRunConditions conditions)
+        private void PrintRunConditions(IMessageLogger logger, string source, TestRunContext context)
         {
-            logger.SendMessage(TestMessageLevel.Informational, "--------------------------------------------------------------");
-            logger.SendMessage(TestMessageLevel.Informational, "Test Run Conditions:");
-            logger.SendMessage(TestMessageLevel.Informational, "    Target AmsNetID: " + conditions.Target);
-            logger.SendMessage(TestMessageLevel.Informational, "    TwinCAT Build: " + conditions.TwinCATVersion);
-            logger.SendMessage(TestMessageLevel.Informational, "    Operating System: " + conditions.OperatingSystem);
-            logger.SendMessage(TestMessageLevel.Informational, "    Duration: " + conditions.Duration.TotalSeconds.ToString() + "s");
-            logger.SendMessage(TestMessageLevel.Informational, "    Configuration: " + conditions.BuildConfiguration);
-            logger.SendMessage(TestMessageLevel.Informational, "--------------------------------------------------------------");
+            logger.LogInformation( "--------------------------------------------------------------");
+            logger.LogInformation( "Test Run Conditions:");
+            logger.LogInformation( "    Source: " + source);
+            logger.LogInformation( "    Target AmsNetID: " + context.Target);
+            logger.LogInformation( "    TwinCAT Build: " + context.TwinCATVersion);
+            logger.LogInformation( "    Operating System: " + context.OperatingSystem);
+            logger.LogInformation( "    Duration: " + context.Duration.TotalSeconds.ToString() + "s");
+            logger.LogInformation( "    Configuration: " + context.BuildConfiguration);
+            logger.LogInformation( "--------------------------------------------------------------");
         }
     }
 }

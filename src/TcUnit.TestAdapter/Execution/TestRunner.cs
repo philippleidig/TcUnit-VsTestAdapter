@@ -8,6 +8,7 @@ using System.Linq;
 using System.Threading;
 using TcUnit.TestAdapter.Abstractions;
 using TcUnit.TestAdapter.Common;
+using TcUnit.TestAdapter.Extensions;
 using TcUnit.TestAdapter.Models;
 using TcUnit.TestAdapter.RunSettings;
 using TwinCAT.Ads;
@@ -24,13 +25,13 @@ namespace TcUnit.TestAdapter.Execution
 
             foreach (var plcProject in project.PlcProjects)
             {
-                try 
+                try
                 {
-                   CheckPlcProjectSuitableForTestRun(plcProject);
+                    CheckPlcProjectSuitableForTestRun(plcProject);
                 }
                 catch (Exception e)
-                { 
-                    logger.SendMessage(TestMessageLevel.Informational, $"Found non suitable PLC project for {plcProject.Name}: {e.Message}");
+                {
+                    logger.LogInformation($"Found non suitable PLC project for {plcProject.Name}: {e.Message}");
                     continue;
                 }
 
@@ -72,7 +73,7 @@ namespace TcUnit.TestAdapter.Execution
 
                             if (testSuiteFB == null)
                             {
-                                logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {symbol.BaseType} not found in PLC project {plcProject.Name}");
+                                logger.LogWarning( $"TestSuite {symbol.BaseType} not found in PLC project {plcProject.Name}");
                                 continue;
                             }
 
@@ -94,7 +95,8 @@ namespace TcUnit.TestAdapter.Execution
                         var parentSymbols = dataArea.Symbols
                             .Where(symbol => testSuiteParentDatatypes.Any(testSuiteParentDatatype => testSuiteParentDatatype.Name == symbol.BaseType));
 
-                        foreach (var parentSymbol in parentSymbols) {
+                        foreach (var parentSymbol in parentSymbols)
+                        {
                             var parentSymbolInstancePath = parentSymbol.Name;
 
                             // parent datatype
@@ -115,7 +117,7 @@ namespace TcUnit.TestAdapter.Execution
 
                                 if (testSuiteFB == null)
                                 {
-                                    logger.SendMessage(TestMessageLevel.Warning, $"TestSuite {subItem.Type} not found in PLC project {plcProject.Name}");
+                                    logger.LogWarning($"TestSuite {subItem.Type} not found in PLC project {plcProject.Name}");
                                     continue;
                                 }
 
@@ -131,7 +133,7 @@ namespace TcUnit.TestAdapter.Execution
 
                                     tests.Add(test);
                                 }
-                            }   
+                            }
                         }
                     }
                 }
@@ -200,7 +202,7 @@ namespace TcUnit.TestAdapter.Execution
             var testRun = new TestRun
             {
                 Results = testRunResults,
-                Conditions = new TestRunConditions
+                Context = new TestRunContext
                 {
                     TwinCATVersion = targetRuntime.Info.TwinCATVersion.ToString(),
                     Target = target,

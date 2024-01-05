@@ -4,7 +4,7 @@ using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using Moq;
 using TcUnit.TestAdapter.Discovery;
 
-namespace TcUnit.TestAdapter.Tests
+namespace TcUnit.TestAdapter.Filter
 {
     [TestClass]
     public class TestCaseFilterTests

@@ -51,9 +51,13 @@ namespace TcUnit.TestAdapter.Models
         {
             var doc = XDocument.Load(CompletePathInFileSystem);
 
-            var nodes = doc.Elements(XmlNamespace + "Project")
-                            .Elements(XmlNamespace + "ItemGroup")
-                            .Elements(XmlNamespace + "None");
+            // Support both auto-generated and manually added TMCs, which show up differently in the PLC project file
+            XmlNamespaceManager ns = new XmlNamespaceManager(new NameTable());
+            ns.AddNamespace("prefix", XmlNamespace.NamespaceName);
+            var xpath = "//prefix:Project/prefix:ItemGroup/prefix:None";
+            xpath += "|//prefix:Project/prefix:ItemGroup/prefix:Content";
+
+            var nodes = doc.XPathSelectElements(xpath, ns);
 
             foreach (var node in nodes)
             {

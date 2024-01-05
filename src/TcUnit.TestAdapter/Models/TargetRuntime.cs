@@ -1,22 +1,31 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using TcUnit.TestAdapter.Common;
+using TcUnit.TestAdapter.Services;
+using TwinCAT;
 using TwinCAT.Ads;
 
 namespace TcUnit.TestAdapter.Models
 {
     public class TargetRuntime
     {
-        private readonly SystemService systemService;
+        private readonly TwinCATSystemService systemService;
+        private readonly TwinCATEventListener eventListener;
+
         public TargetInfo Info { get; set; }
         public AmsNetId AmsNetId { get; set; }
+        public Tuple<int, int> RealtimeSettings { get; set; }
 
-        public TargetRuntime(string target)
+        public TargetRuntime(AmsNetId target)
         {
-            AmsNetId = new AmsNetId(target);
-            systemService = new SystemService(target);
+            AmsNetId = target;
+            systemService = new TwinCATSystemService(target);
+            eventListener = new TwinCATEventListener(target);
+
             Info = systemService.GetDeviceInfo();
+            RealtimeSettings = systemService.GetRealtimeSettings();
         }
 
         public bool Disconnect()
@@ -26,14 +35,30 @@ namespace TcUnit.TestAdapter.Models
 
         public bool IsReachable => systemService.IsReachable();
 
-        public void SwitchToConfigMode()
+        public void SwitchToConfigMode(TimeSpan timeout)
         {
-            systemService.SwitchRuntimeState(AdsState.Reconfig);
+            systemService.SwitchRuntimeState(AdsStateCommand.Reconfig, timeout);
         }
 
-        public void SwitchToRunMode()
+        public void SwitchToRunMode(TimeSpan timeout)
         {
-            systemService.SwitchRuntimeState(AdsState.Reset);
+            var errors = new List<AdsLogEntry>();
+
+            eventListener.EventRaised += (s, e) =>
+            {
+                if(e.Event.LogLevel >= AdsLogLevel.Warning)
+                {
+                    errors.Add(e.Event);
+                }
+            };
+
+            var succeeded = systemService.SwitchRuntimeState(AdsStateCommand.Reset, timeout);
+
+            if (!succeeded)
+            {
+                var messages = string.Join("\n", errors);
+                throw new AdsException("Failed to set TwinCAT runtime to requested state. \n" + messages);
+            } 
         }
 
         public void DownloadProject(TwinCATXAEProject xaeProject, bool cleanBeforeDownload = true)
@@ -43,13 +68,14 @@ namespace TcUnit.TestAdapter.Models
                 throw new ArgumentNullException("Project is not prebuild");
             }
 
-            var bootProjects = xaeProject.BootProjects.Where(p => RTOperatingSystem.AvailableRTPlattforms[p.RTPlatform] == RTOperatingSystem.AvailableRTPlattforms[Info.RTPlatform]);
+            var bootProjects = xaeProject.BootProjects.Where(p => Common.RTOperatingSystem.AvailableRTPlattforms[p.RTPlatform] == Common.RTOperatingSystem.AvailableRTPlattforms[Info.RTPlatform]);
 
             if (!bootProjects.Any())
             {
                 var availableBootProjects = string.Join(", ", xaeProject.BootProjects.Select(p => p.RTPlatform.ToString()));
                 throw new ArgumentOutOfRangeException($"Could not find the corresponding TwinCAT target platform in the prebuild boot projects. Platform name: {Info.RTPlatform}. Available boot projects: {availableBootProjects}");
             }
+
             var bootProject = bootProjects.FirstOrDefault();
 
             if (!File.Exists(bootProject.CurrentConfigPath))
@@ -64,7 +90,7 @@ namespace TcUnit.TestAdapter.Models
          
             if (cleanBeforeDownload)
             {
-                systemService.CleanUpBootDirectory(Info.ImageOsName);
+                CleanUpBootFolder();
             }
 
             DownloadBootProject(bootProject);
@@ -79,7 +105,6 @@ namespace TcUnit.TestAdapter.Models
             {
                 DownloadPlcProject(bootProject.PlcProjectPath);
             }
-
         }
 
         public void DownloadCurrentConfig(string path)
@@ -118,7 +143,6 @@ namespace TcUnit.TestAdapter.Models
                 throw new Exception("Could not create /Boot/Plc folder on target with reason: " + ex.Message);
             }
 
-
             var plcAppFiles = Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly);
 
             if (plcAppFiles.Count() == 0)
@@ -135,7 +159,7 @@ namespace TcUnit.TestAdapter.Models
                     throw new FileNotFoundException("File does not exist " + file);
                 }
 
-                var filePath = "Plc" + RTOperatingSystem.GetSeperatorByOsName(Info.ImageOsName) + fileName;
+                var filePath = "Plc" + Common.RTOperatingSystem.GetSeperatorByOsName(Info.ImageOsName) + fileName;
 
                 try
                 {

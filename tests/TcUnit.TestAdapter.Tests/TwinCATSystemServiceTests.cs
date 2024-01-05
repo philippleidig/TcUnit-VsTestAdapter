@@ -9,12 +9,12 @@ using TwinCAT.Ads;
 namespace TcUnit.TestAdapter.Models
 {
     [TestClass]
-    public class SystemServiceTests
+    public class TwinCATSystemServiceTests
     {
         [TestMethod]
         public void SystemServiceConstructorTests()
         {
-            var systemService = new SystemService(AmsNetId.LocalHost);
+            var systemService = new TwinCATSystemService(AmsNetId.LocalHost);
 
             var targetInfo = systemService.GetDeviceInfo();
             Assert.IsNotNull(targetInfo);
@@ -24,7 +24,7 @@ namespace TcUnit.TestAdapter.Models
         [TestMethod]
         public void FileExistsTests()
         {
-            var systemService = new SystemService(AmsNetId.LocalHost);
+            var systemService = new TwinCATSystemService(AmsNetId.LocalHost);
 
             // current assembly location
             var assemblyLocation = System.Reflection.Assembly.GetExecutingAssembly().Location;
@@ -36,7 +36,7 @@ namespace TcUnit.TestAdapter.Models
         {
             var testFile = CreateTemporaryFile("TestFile.txt");
 
-            var systemService = new SystemService(AmsNetId.LocalHost);
+            var systemService = new TwinCATSystemService(AmsNetId.LocalHost);
 
             Assert.IsTrue(systemService.FileExistsInBootFolder("TestFile.txt"));
 
@@ -48,7 +48,7 @@ namespace TcUnit.TestAdapter.Models
         {
             var testFile = CreateTemporaryFile("TestFile.txt");
 
-            var systemService = new SystemService(AmsNetId.LocalHost);
+            var systemService = new TwinCATSystemService(AmsNetId.LocalHost);
             var targetInfo = systemService.GetDeviceInfo();
             systemService.CleanUpBootDirectory(targetInfo.ImageOsName);
 

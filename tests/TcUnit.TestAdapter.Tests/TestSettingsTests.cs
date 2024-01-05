@@ -12,7 +12,7 @@ using TcUnit.TestAdapter.Discovery;
 
 namespace TcUnit.TestAdapter.Tests
 {
-    public class TestSettingsTests : TestContainer
+    public class TestSettingsTests
     {
        
     }

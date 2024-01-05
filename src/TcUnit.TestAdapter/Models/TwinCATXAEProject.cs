@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml.Linq;
 
 namespace TcUnit.TestAdapter.Models
 {
@@ -9,13 +10,14 @@ namespace TcUnit.TestAdapter.Models
     {
         private List<TwinCATBootProject> _bootProjects;
         private List<PlcProject> _plcProjects;
+
         public IEnumerable<TwinCATBootProject> BootProjects => _bootProjects;
         public IEnumerable<PlcProject> PlcProjects => _plcProjects;
 
+        public Tuple<int, int> RealtimeSettings { get; private set; }
+
         public bool IsProjectPreBuild => BootProjects.Count() > 0;
-
         public bool IsPlcProjectIncluded => PlcProjects.Count() > 0;
-
         public string ProjectFolder { get; private set; }
         public string FilePath { get; private set; }
 
@@ -27,8 +29,44 @@ namespace TcUnit.TestAdapter.Models
             FilePath = filepath;
             ProjectFolder = Path.GetDirectoryName(filepath);
 
+            ParseRealtimeSettings();
+
             ParseBootProjects();
             ParsePlcProjects();
+        }
+
+        public bool IsSuitableForTarget (TargetRuntime targetRuntime)
+        {
+            var projectRTSettings = RealtimeSettings;
+            var targetRTSettings = targetRuntime.RealtimeSettings;
+
+            // max CPU cores
+            if (projectRTSettings.Item1 > targetRTSettings.Item1)
+                return false;
+
+            // isolated CPU cores
+            if (projectRTSettings.Item1 != targetRTSettings.Item1)
+                return false;
+
+            return true;
+        }
+
+        private void ParseRealtimeSettings()
+        {
+            var projectFile = XDocument.Load(FilePath);
+            var realtimeSettings = projectFile.Element("TcSmProject")
+                                                .Element("Project")
+                                                .Element("System")
+                                                .Element("Settings");
+
+            if (realtimeSettings != null)
+            {
+                int.TryParse(realtimeSettings.Attribute("MaxCpus")?.Value, out int maxCpuCount);
+                int.TryParse(realtimeSettings.Attribute("NonWinCpus")?.Value, out int isolatedCpuCount);
+                var sharedCpuCount = maxCpuCount - isolatedCpuCount;
+
+                RealtimeSettings = new Tuple<int,int>(sharedCpuCount, isolatedCpuCount);
+            }
         }
 
         private void ParseBootProjects()

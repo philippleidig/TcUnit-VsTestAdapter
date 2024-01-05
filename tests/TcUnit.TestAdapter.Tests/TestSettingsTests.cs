@@ -1,7 +1,9 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
+﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel.Adapter;
 using Moq;
 using System.Xml;
 using TcUnit.TestAdapter.RunSettings;
+using TwinCAT.Ads;
 
 namespace TcUnit.TestAdapter.Tests
 {
@@ -29,40 +31,114 @@ namespace TcUnit.TestAdapter.Tests
         }
 
         [TestMethod]
-        public void TestBadXmlElements ()
+        public void TestInRunContext()
         {
             string settingsXml =
-              @"<?xml version=""1.0"" encoding=""utf-8""?>
-                <RunSettings>
-                     <TcUnit>
-                       <BadElement>TestResults</BadElement>
-                       <Target>192.168.0.1.1.1</Target>
-                     </TcUnit>
-                </RunSettings>";
+              @"<TcUnit>
+                   <CleanUpAfterTestRun>false</CleanUpAfterTestRun>
+                   <Target>192.168.0.1.1.1</Target>
+                </TcUnit>";
 
             var runSettingsProvider = new RunSettingsProvider();
 
-            using(XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
+            using (XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
             {
                 runSettingsProvider.Load(reader);
             }
 
-            var settings = runSettingsProvider.Settings;
+            var runSettings = new Mock<IRunSettings>();
+            runSettings.Setup(x => x.GetSettings(It.IsAny<string>()))
+                              .Returns(runSettingsProvider);
+
+            var settings = runSettings.Object.GetTestSettings(TestAdapter.RunSettingsName);
 
             Assert.AreEqual("192.168.0.1.1.1", settings.Target);
+            Assert.AreEqual(false, settings.CleanUpAfterTestRun);
             Assert.AreEqual(TestAdapter.RunSettingsName, runSettingsProvider.Name);
         }
 
         [TestMethod]
-        public void TestInvalidXmlValues()
+        public void TestBadXmlElements ()
         {
             string settingsXml =
-              @"<?xml version=""1.0"" encoding=""utf-8""?>
-                <RunSettings>
-                     <TcUnit>
-                       <Target>12345678</Target>
-                     </TcUnit>
-                </RunSettings>";
+              @"<TcUnit>
+                    <BadElement>TestResults</BadElement>
+                    <Target>192.168.0.1.1.1</Target>
+                </TcUnit>";
+
+            var runSettingsProvider = new RunSettingsProvider();
+
+            Assert.ThrowsException<InvalidTestSettingsException>(() => {
+                using (XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
+                {
+                    runSettingsProvider.Load(reader);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TestInvalidXmlRootValue()
+        {
+            string settingsXml =
+              @"<TcUnitInvalid>
+                   <CleanUpAfterTestRun>false</CleanUpAfterTestRun>
+                   <Target>192.168.0.1.1.1</Target>
+                </TcUnitInvalid>";
+
+            var runSettingsProvider = new RunSettingsProvider();
+
+            Assert.ThrowsException<InvalidTestSettingsException>(() => {
+                using (XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
+                {
+                    runSettingsProvider.Load(reader);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TestInvalidXmlTargetValue()
+        {
+            string settingsXml =
+              @"<TcUnit>
+                    <Target>12345678</Target>
+                </TcUnit>";
+
+            var runSettingsProvider = new RunSettingsProvider();
+
+            Assert.ThrowsException<InvalidTestSettingsException>(() => {
+                using (XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
+                {
+                    runSettingsProvider.Load(reader);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TestInvalidXmlCleanUpValue()
+        {
+            string settingsXml =
+              @"<TcUnit>
+                    <CleanUpAfterTestRun>abcdefg</CleanUpAfterTestRun>
+                </TcUnit>";
+
+            var runSettingsProvider = new RunSettingsProvider();
+
+            Assert.ThrowsException<InvalidTestSettingsException>(() => {
+                using (XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
+                {
+                    runSettingsProvider.Load(reader);
+                }
+            });
+        }
+
+        [TestMethod]
+        public void TestXmlElements()
+        {
+            string settingsXml =
+              @"<TcUnit>
+                   <CleanUpAfterTestRun>false</CleanUpAfterTestRun>
+                   <Target>192.168.0.1.1.1</Target>
+                </TcUnit>";
 
             var runSettingsProvider = new RunSettingsProvider();
 
@@ -73,7 +149,9 @@ namespace TcUnit.TestAdapter.Tests
 
             var settings = runSettingsProvider.Settings;
 
-
+            Assert.AreEqual("192.168.0.1.1.1", settings.Target);
+            Assert.AreEqual(false, settings.CleanUpAfterTestRun);
+            Assert.AreEqual(TestAdapter.RunSettingsName, runSettingsProvider.Name);
         }
     }
 }

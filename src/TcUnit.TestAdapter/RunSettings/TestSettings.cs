@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Xml;
 using System.Xml.Serialization;
+using TwinCAT.Ads;
 
 namespace TcUnit.TestAdapter.RunSettings
 {
@@ -18,8 +19,7 @@ namespace TcUnit.TestAdapter.RunSettings
             CleanUpAfterTestRun = TestAdapter.DefaultCleanUpAfterTestRun;
         }
 
-        public string Target { get; set; } 
-
+        public string Target { get; set; }
         public bool CleanUpAfterTestRun { get; set; }
 
         public override XmlElement ToXml()

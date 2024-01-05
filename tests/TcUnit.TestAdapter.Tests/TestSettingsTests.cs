@@ -5,7 +5,7 @@ using System.Xml;
 using TcUnit.TestAdapter.RunSettings;
 using TwinCAT.Ads;
 
-namespace TcUnit.TestAdapter.Tests
+namespace TcUnit.TestAdapter.RunSettings
 {
     [TestClass]
     public class TestSettingsTests

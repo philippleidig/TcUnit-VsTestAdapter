@@ -2,27 +2,21 @@
 using Microsoft.VisualStudio.TestPlatform.ObjectModel.Logging;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using TcUnit.TestAdapter.Discovery;
+using TcUnit.TestAdapter.Tests.Mocks;
 
-namespace TcUnit.TestAdapter.Tests
+namespace TcUnit.TestAdapter.Discovery
 {
     [TestClass]
     public class TestDiscovererTests
     {
         [TestMethod]
-        public void TestDiscoverTests()
+        public void TestDiscoverTestsInSingleSource()
         {
             // Arrange
             var mockLogger = Mock.Of<IMessageLogger>();
             var mockDiscoveryContext = Mock.Of<IDiscoveryContext>();
 
-            var testCaseDiscoverySink = new TestCaseDiscoverySink();
+            var testCaseDiscoverySink = new TestCaseDiscoverySinkMock();
             var testDiscoverer = new TestDiscoverer();
 
             var testSources = new List<string>() { @"PlcTestProject\PlcTestProject.tsproj" };
@@ -33,15 +27,30 @@ namespace TcUnit.TestAdapter.Tests
             // Assert
             Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 17); 
         }
-    }
 
-    internal class TestCaseDiscoverySink : ITestCaseDiscoverySink
-    {
-        public List<TestCase> TestCases = new List<TestCase>();
-        public void SendTestCase(TestCase discoveredTest)
+        [TestMethod]
+        public void TestDiscoverTestsInMultipleSources()
         {
-            TestCases.Add(discoveredTest);
+            // Arrange
+            var mockLogger = Mock.Of<IMessageLogger>();
+            var mockDiscoveryContext = Mock.Of<IDiscoveryContext>();
+
+            var testCaseDiscoverySink = new TestCaseDiscoverySinkMock();
+            var testDiscoverer = new TestDiscoverer();
+
+            var testSources = new List<string>() {
+                @"PlcTestProject\PlcTestProject.tsproj",
+                @"PlcTestProject\PlcTestProject.tsproj" 
+            };
+
+            // Act
+            testDiscoverer.DiscoverTests(testSources, mockDiscoveryContext, mockLogger, testCaseDiscoverySink);
+
+            // Assert
+            Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 34);
         }
     }
+
+
 }
 

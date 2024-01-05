@@ -13,7 +13,6 @@ namespace TcUnit.TestAdapter.RunSettings
         protected readonly XmlSerializer serializer;
 
         public TestSettings Settings { get; private set; }
-
         public string Name { get; private set; }
 
         public RunSettingsProvider()
@@ -22,6 +21,7 @@ namespace TcUnit.TestAdapter.RunSettings
             Settings = new TestSettings();
             serializer = new XmlSerializer(typeof(TestSettings));
         }
+
         public void Load(XmlReader reader)
         {
             ValidateArg.NotNull(reader, "reader");

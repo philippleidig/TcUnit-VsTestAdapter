@@ -14,12 +14,7 @@ namespace TcUnit.TestAdapter.RunSettings
             var provider = runSettings.GetTestSettingsProvider(name);
             if (provider == null)
             {
-                // no runsettings file specified - use default values
-                return new TestSettings
-                {
-                    Target = TestAdapter.DefaultTargetRuntime,
-                    CleanUpAfterTestRun = TestAdapter.DefaultCleanUpAfterTestRun
-                };
+                return new TestSettings();
             }
 
             return provider.Settings as TestSettings;

@@ -14,7 +14,8 @@ namespace TcUnit.TestAdapter.RunSettings
         public TestSettings() 
             : base(TestAdapter.RunSettingsName)
         {
-
+            Target = TestAdapter.DefaultTargetRuntime;
+            CleanUpAfterTestRun = TestAdapter.DefaultCleanUpAfterTestRun;
         }
 
         public string Target { get; set; } 

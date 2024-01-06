@@ -5,24 +5,24 @@ namespace TcUnit.TestAdapter.Models
 {
     public class Method_POU : POU
     {
-        internal Method_POU(string name, Guid id, string declaration, string implementation)
+        private Method_POU(string name, Guid id, XElement implementation)
         {
             Name = name;
-            Id = id;
-            Declaration = declaration;
-            Implementation = implementation;
+            Implementation = new StructuredTextImplementation(implementation);
         }
 
-        public static Method_POU Parse(XElement xMethod)
+        public static Method_POU Parse(XElement element)
         {
-            string name = xMethod.Attribute("Name").Value;
-            Guid id = Guid.Parse(xMethod.Attribute("Id").Value);
-            string declaration = xMethod.Element("Declaration").Value;
-            string implementation = xMethod.Element("Implementation").Element("ST").Value;
+            string name = element.Attribute("Name").Value;
+            Guid id = Guid.Parse(element.Attribute("Id").Value);
+            var implementation = element.Element("Implementation").Element("ST");
 
-            var method = new Method_POU(name, id, declaration, implementation);
+            if (implementation == null)
+            {
+                throw new NotSupportedException("Only structured text implementation is supported.");
+            }
 
-            return method;
+            return new Method_POU(name, id, implementation);
         }
     }
 }

@@ -13,7 +13,7 @@ namespace TcUnit.TestAdapter.Models
 
         }
 
-        private void ParseTestCases(string implementation)
+        private void ParseTestCases(StructuredTextImplementation implementation)
         {
             // match all groups in multi-line string where there is a section starting with
             // TEST('name') OR TEST_ORDERED('name') and ending with TEST_FINISHED();
@@ -37,7 +37,7 @@ namespace TcUnit.TestAdapter.Models
 
             var regex = new Regex(@"(?<=TEST(_ORDERED)?\()'(?<testName>[^']+)'\)(.*?)(?=TEST_FINISHED)", RegexOptions.Singleline | RegexOptions.IgnoreCase);
 
-            var matches = regex.Matches(implementation);
+            var matches = regex.Matches(implementation.ToString());
             foreach (Match match in matches)
             {
                 var testName = match.Groups["testName"].Value;

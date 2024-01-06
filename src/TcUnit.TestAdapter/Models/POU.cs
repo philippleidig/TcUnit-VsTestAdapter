@@ -8,6 +8,6 @@ namespace TcUnit.TestAdapter.Models
         public Guid Id { get; set; }
         public string FilePath { get; set; }
         public string Declaration { get; set; }
-        public string Implementation { get; set; }
+        public StructuredTextImplementation Implementation { get; set; }
     }
 }

@@ -13,7 +13,7 @@ namespace TcUnit.TestAdapter.Models
         public void TestParseFromFile() {
             var filePath = @"PlcTestProject\FirstPLC\POUs\FB_TestSuite2.TcPOU";
 
-            var pou = FunctionBlock_POU.ParseFromFilePath(filePath);
+            var pou = FunctionBlock_POU.Load(filePath);
 
             var testSuite = TestSuite.ParseFromFunctionBlock(pou);
 

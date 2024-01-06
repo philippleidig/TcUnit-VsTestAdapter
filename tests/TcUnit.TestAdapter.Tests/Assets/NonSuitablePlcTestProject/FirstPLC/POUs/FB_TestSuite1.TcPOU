@@ -1,0 +1,101 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_TestSuite1" Id="{a5ea8811-5301-4f6c-aafd-b2e96e83b4a4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSuite1 EXTENDS FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TestCase1A();
+TestCase1BCD();
+TestCase1F_IgnoreCase();]]></ST>
+    </Implementation>
+    <Method Name="TestCase1BCD" Id="{5dcda336-eb7c-4bc2-a049-4f178c78790e}">
+      <Declaration><![CDATA[METHOD TestCase1BCD
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestCase1B');
+
+AssertTrue(False, 'Condition is not true');
+
+TEST_FINISHED_NAMED('TestCase1B');
+
+IF TEST_ORDERED('TestCase1C') THEN
+
+    AssertTrue(TRUE, 'Condition is not true');
+
+    TEST_FINISHED();
+END_IF
+
+TEST('TestCase1D');
+
+AssertTrue(FALSE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
+
+
+TEST_FINISHED();
+
+
+TEST('TestCase1E with a space');
+
+AssertTrue(TRUE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
+
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestCase1F_IgnoreCase" Id="{93ccc455-0496-40f6-9dd8-d004dfed4904}">
+      <Declaration><![CDATA[METHOD TestCase1F_IgnoreCase : REFERENCE TO FB_Test
+VAR_INPUT
+END_VAR
+VAR_INST
+    step : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF TesT_ORdEReD('TestCase1F Ignore Case') THEN
+    AssertFalse(False, 'Condition is not false');
+    // introduce whitespace for test        
+            TEsT_FiNiSHED();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestCase1A" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">
+      <Declaration><![CDATA[METHOD TestCase1A
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestCase1A');
+
+AssertTrue(2+2=4, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestCase1G_Characters" Id="{d71f7ba2-1c33-4a28-87c8-9ec150ddf7fd}">
+      <Declaration><![CDATA[METHOD TestCase1G_Characters : REFERENCE TO FB_Test
+VAR_INPUT
+END_VAR
+VAR_INST
+    step : DINT;
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[
+IF TEST_ORDERED('TestCase1G 1*/_-1^&"@!()') THEN
+    AssertFalse(TRUE, 'Condition is not false');
+    TEST_FINISHED();
+END_IF]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

@@ -72,7 +72,7 @@ namespace TcUnit.TestAdapter.Tests
                 @"<?xml version=""1.0"" encoding=""UTF-8""?>
                   <testsuites disabled="""" failures=""2"" tests=""10"" time=""20"">
                     <testsuite id=""0"" name=""TestSuite_1"" tests=""5"" failures=""1"" time=""10"">
-                        <testcase name=""TestCase_1"" classname=""TestSuite_1"" time=""6"" status=""FAILED"">
+                        <testcase name=""TestCase_1"" classname=""TestSuite_1"" time=""6"" status=""FAIL"">
                             <failure message=""My assert message!"" type=""BOOL"" />
                         </testcase>
                         <testcase name=""TestCase_2"" classname=""TestSuite_1"" time=""1"" status=""PASS""></testcase>
@@ -81,7 +81,7 @@ namespace TcUnit.TestAdapter.Tests
                         <testcase name=""TestCase_5"" classname=""TestSuite_1"" time=""1"" status=""PASS""></testcase>
                     </testsuite>
                     <testsuite id=""1"" name=""TestSuite_2"" tests=""5"" failures=""1"" time=""10"">
-                        <testcase name=""TestCase_1"" classname=""TestSuite_2"" time=""6"" status=""FAILED"">
+                        <testcase name=""TestCase_1"" classname=""TestSuite_2"" time=""6"" status=""FAIL"">
                             <failure message=""My assert message!"" type=""BOOL"" />
                         </testcase>
                         <testcase name=""TestCase_2"" classname=""TestSuite_2"" time=""1"" status=""PASS""></testcase>

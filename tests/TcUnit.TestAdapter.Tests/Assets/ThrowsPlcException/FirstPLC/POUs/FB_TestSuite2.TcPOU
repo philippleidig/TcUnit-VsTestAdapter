@@ -1,0 +1,51 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_TestSuite2" Id="{3a6274d6-6083-4f38-89f5-174a468b61d8}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSuite2 EXTENDS FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TestCase2A();
+TestCase2B();
+
+TEST('TestCase2C');
+
+AssertTrue(TRUE, 'Condition is not true');
+AssertTrue(FALSE, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
+    </Implementation>
+    <Method Name="TestCase2A" Id="{08302e5c-315f-491e-adf5-28ac987840cc}">
+      <Declaration><![CDATA[METHOD TestCase2A
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestCase2A');
+
+AssertTrue(TRUE, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+    <Method Name="TestCase2B" Id="{d124f6c2-5ec2-4271-8a1e-818da4d1bf79}">
+      <Declaration><![CDATA[METHOD TestCase2B
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestCase2B');
+
+AssertTrue(TRUE, 'Condition is not true');
+AssertTrue(TRUE, 'Condition is not true');
+
+TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

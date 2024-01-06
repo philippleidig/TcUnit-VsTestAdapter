@@ -2,13 +2,22 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection.PortableExecutable;
+using System.Reflection;
+using System.Runtime;
 using System.Text;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Schema;
+using TcUnit.TestAdapter.RunSettings;
+using System.Xml.Serialization;
 
 namespace TcUnit.TestAdapter.Execution
 {
     public class XUnitTestResultParser
     {
+        private const string XUnitXmlSchemaResource = "TcUnit.TestAdapter.Schemas.XUnitXmlSchema.xsd";
+
         public IEnumerable<TestCaseResult> ParseFromFile (string filePath)
         {
             if(!File.Exists(filePath))
@@ -22,7 +31,22 @@ namespace TcUnit.TestAdapter.Execution
 
         public IEnumerable<TestCaseResult> Parse(Stream stream)
         {
-            return ParseTestResults(stream);
+            try
+            {
+                return ParseTestResults(stream);
+            }
+            catch (XmlException e)
+            {
+                throw new InvalidXUnitTestResultsException(e.Message, e);
+            }
+            catch (XmlSchemaValidationException e)
+            {
+                throw new InvalidXUnitTestResultsException(e.Message, e);
+            }
+            catch (InvalidOperationException e) when (e.InnerException is XmlSchemaValidationException)
+            {
+                throw new InvalidXUnitTestResultsException(e.InnerException.Message, e.InnerException);
+            }
         }
 
         private IEnumerable<TestCaseResult> ParseTestResults(Stream stream)
@@ -30,6 +54,13 @@ namespace TcUnit.TestAdapter.Execution
             var testCaseResults = new List<TestCaseResult>();
 
             XDocument testResults = XDocument.Load(stream);
+
+            var schemaSet = new XmlSchemaSet();
+            var schemaStream = Assembly.GetExecutingAssembly()
+                                        .GetManifestResourceStream(XUnitXmlSchemaResource);
+
+            schemaSet.Add(null, XmlReader.Create(schemaStream));
+            testResults.Validate(schemaSet, (object o, ValidationEventArgs e) => throw e.Exception, true);
 
             foreach (XElement testSuite in testResults.Elements("testsuites").Elements("testsuite"))
             {
@@ -84,6 +115,17 @@ namespace TcUnit.TestAdapter.Execution
             catch { }
 
             return result;
+        }
+
+        [Serializable]
+        public class InvalidXUnitTestResultsException : Exception
+        {
+            public InvalidXUnitTestResultsException() { }
+            public InvalidXUnitTestResultsException(string message) : base(message) { }
+            public InvalidXUnitTestResultsException(string message, Exception inner) : base(message, inner) { }
+            protected InvalidXUnitTestResultsException(
+              System.Runtime.Serialization.SerializationInfo info,
+              System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
         }
     }
 }

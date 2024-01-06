@@ -32,7 +32,7 @@ namespace TcUnit.TestAdapter.RunSettings
 
             var schemaSet = new XmlSchemaSet();
             var schemaStream = Assembly.GetExecutingAssembly()
-                                        .GetManifestResourceStream("TcUnit.TestAdapter.RunSettings.TestSettingsSchema.xsd");
+                                        .GetManifestResourceStream("TcUnit.TestAdapter.Schemas.TestSettingsXmlSchema.xsd");
 
             schemaSet.Add(null, XmlReader.Create(schemaStream));
 

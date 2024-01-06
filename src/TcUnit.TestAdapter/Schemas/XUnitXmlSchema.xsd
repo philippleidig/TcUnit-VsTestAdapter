@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+   elementFormDefault="qualified"
+   attributeFormDefault="unqualified">
+  
+  <xs:simpleType name="ISO8601_DATETIME_PATTERN">
+    <xs:restriction base="xs:dateTime">
+      <xs:pattern value="[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+  <xs:element name="testsuites">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="testsuite" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+            <xs:complexContent>
+              <xs:extension base="testsuite">
+                <xs:attribute name="id" type="xs:int" use="required"></xs:attribute>
+              </xs:extension>
+            </xs:complexContent>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>   
+      <xs:attribute name="disabled" type="xs:string"></xs:attribute>
+      <xs:attribute name="tests" type="xs:int" use="required"></xs:attribute>
+      <xs:attribute name="failures" type="xs:int" use="required"></xs:attribute>
+      <xs:attribute name="time" type="xs:decimal" use="required"></xs:attribute>    
+    </xs:complexType>
+  </xs:element>
+  
+  <xs:complexType name="testsuite">
+    
+    <xs:sequence>
+      <xs:element name="testcase" minOccurs="0" maxOccurs="unbounded">
+        <xs:complexType>
+          
+          <xs:choice minOccurs="0">         
+            <xs:element name="error">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="pre-string">
+                    <xs:attribute name="message" type="xs:string"></xs:attribute>
+                    <xs:attribute name="type" type="xs:string" use="required"></xs:attribute>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+            
+            <xs:element name="failure">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="pre-string">
+                    <xs:attribute name="message" type="xs:string"></xs:attribute>
+                    <xs:attribute name="type" type="xs:string" use="required"></xs:attribute>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>
+            
+            <xs:element name="skipped">
+              <xs:complexType>
+                <xs:simpleContent>
+                  <xs:extension base="pre-string">
+                    <xs:attribute name="type" type="xs:string" use="required"></xs:attribute>
+                  </xs:extension>
+                </xs:simpleContent>
+              </xs:complexType>
+            </xs:element>       
+          </xs:choice>
+          
+          <xs:attribute name="name" type="xs:token" use="required"></xs:attribute>
+          <xs:attribute name="classname" type="xs:token" use="required"></xs:attribute>
+          <xs:attribute name="time" type="xs:decimal" use="required"></xs:attribute>
+          
+          <xs:attribute name="status" use="required">
+            <xs:simpleType>
+              <xs:restriction base="xs:string">
+                <xs:minLength value="1"/>
+                <xs:enumeration value="PASS"/>
+                <xs:enumeration value="SKIPPED"/>
+                <xs:enumeration value="FAILED"/>
+              </xs:restriction>
+            </xs:simpleType>
+          </xs:attribute>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+    
+    <xs:attribute name="name" use="required">     
+      <xs:simpleType>
+        <xs:restriction base="xs:token">
+          <xs:minLength value="1"/>
+        </xs:restriction>
+      </xs:simpleType>
+    </xs:attribute>
+    <xs:attribute name="tests" type="xs:int" use="required"></xs:attribute>  
+    <xs:attribute name="failures" type="xs:int" use="required"></xs:attribute>
+    <xs:attribute name="skipped" type="xs:int"></xs:attribute>
+    <xs:attribute name="time" type="xs:decimal" use="required"></xs:attribute> 
+  </xs:complexType>
+  
+  <xs:simpleType name="pre-string">
+    <xs:restriction base="xs:string">
+      <xs:whiteSpace value="preserve"/>
+    </xs:restriction>
+  </xs:simpleType>
+  
+</xs:schema>

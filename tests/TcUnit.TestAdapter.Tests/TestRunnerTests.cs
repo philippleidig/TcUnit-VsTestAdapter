@@ -57,7 +57,7 @@ namespace TcUnit.TestAdapter.Execution
         }
 
         [TestMethod]
-        public void RunTestsTests()
+        public void TestRunTests()
         {
             // currently this requires the target boot folder to already be empty and the target in config mode
             var filePath = @"PlcTestProject\PlcTestProject.tsproj";

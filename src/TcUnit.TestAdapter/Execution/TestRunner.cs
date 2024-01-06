@@ -291,14 +291,30 @@ namespace TcUnit.TestAdapter.Execution
         private void PerformTestRunOnTarget(TargetRuntime target)
         {
             target.SwitchToRunMode(TimeSpan.FromSeconds(10));
-            
-            var isTestRunFinished = false;
 
-            while (!isTestRunFinished)
+            var isSuccess = RetryUntilSuccessOrTimeout(() => {
+                                return target.IsTestRunFinished && target.IsInRunMode;
+                            }, TimeSpan.FromSeconds(10));
+
+            if (!isSuccess)
             {
-                isTestRunFinished = target.IsTestRunFinished();
-                Thread.Sleep(500);
+                throw new Exception();
             }
+        }
+
+        public bool RetryUntilSuccessOrTimeout(Func<bool> task, TimeSpan timeSpan)
+        {
+            bool success = false;
+            int elapsed = 0;
+
+            while ((!success) && (elapsed < timeSpan.TotalMilliseconds))
+            {
+                Thread.Sleep(500);
+                elapsed += 500;
+                success = task();
+            }
+
+            return success;
         }
 
         private IEnumerable<TestCaseResult> CollectTestRunResultsFromTarget(TargetRuntime target)

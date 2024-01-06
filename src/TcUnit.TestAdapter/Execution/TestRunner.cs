@@ -31,7 +31,7 @@ namespace TcUnit.TestAdapter.Execution
                 }
                 catch (Exception e)
                 {
-                    logger.LogInformation($"Found non suitable PLC project for {plcProject.Name}: {e.Message}");
+                    logger.LogWarning($"Found non suitable PLC project for {plcProject.Name}: {e.Message}");
                     continue;
                 }
 

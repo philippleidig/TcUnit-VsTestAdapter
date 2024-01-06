@@ -34,6 +34,8 @@ namespace TcUnit.TestAdapter.Models
         }
 
         public bool IsReachable => systemService.IsReachable();
+        public bool IsInRunMode => systemService.IsInRunMode();
+        public bool IsTestRunFinished => systemService.FileExistsInBootFolder(TestAdapter.TestResultPath);
 
         public void SwitchToConfigMode(TimeSpan timeout)
         {
@@ -184,11 +186,6 @@ namespace TcUnit.TestAdapter.Models
         public void UploadTestRunResults(Stream stream)
         {
             systemService.UploadFileFromBootFolder(stream, TestAdapter.TestResultPath);
-        }
-
-        public bool IsTestRunFinished()
-        {
-            return systemService.FileExistsInBootFolder(TestAdapter.TestResultPath);
         }
     }
 }

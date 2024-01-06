@@ -1,0 +1,16 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="THROW_EXCEPTION" Id="{b57b8da8-fe56-481e-985d-006b7cefc481}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION THROW_EXCEPTION : BOOL
+VAR_INPUT
+END_VAR
+VAR
+	Value	: USINT := 100;
+	Divisor	: USINT := 0;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[Value := Value / Divisor;]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

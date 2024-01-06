@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MAIN" Id="{500fed89-99c1-41f9-aaf6-95df3ebe7e5f}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM MAIN
+VAR
+	Delay : TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// Delay exception to ensure XAR run mode - do not throw in first PLC cycle
+Delay(IN:= TRUE, PT:= T#5S, Q=> , ET=> );
+
+IF Delay.Q THEN
+	THROW_EXCEPTION();
+END_IF
+]]></ST>
+    </Implementation>
+  </POU>
+</TcPlcObject>

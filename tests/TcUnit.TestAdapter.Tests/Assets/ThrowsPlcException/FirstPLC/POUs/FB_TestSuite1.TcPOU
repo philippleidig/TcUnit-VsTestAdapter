@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_TestSuite1" Id="{a5ea8811-5301-4f6c-aafd-b2e96e83b4a4}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_TestSuite1 EXTENDS FB_TestSuite
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[TestCaseLongRunning();
+]]></ST>
+    </Implementation>
+    <Method Name="TestCaseLongRunning" Id="{976e0437-3cd7-4f7e-af64-671bf9c25b18}">
+      <Declaration><![CDATA[METHOD TestCaseLongRunning
+VAR_INPUT
+END_VAR
+]]></Declaration>
+      <Implementation>
+        <ST><![CDATA[TEST('TestCaseLongRunning');
+
+// Test never finishes
+//AssertTrue(2+2=4, 'Condition is not true');
+//TEST_FINISHED();]]></ST>
+      </Implementation>
+    </Method>
+  </POU>
+</TcPlcObject>

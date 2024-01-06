@@ -38,6 +38,12 @@ namespace TcUnit.TestAdapter.Models
             return stateInfo.AdsState != AdsState.Run || stateInfo.AdsState != AdsState.Config;
         }
 
+        public bool IsInRunMode()
+        {
+            adsClient.TryReadState(out StateInfo stateInfo);
+            return stateInfo.AdsState != AdsState.Run;
+        }
+
         public void Connect()
         {
             adsClient.Timeout = (int)TimeSpan.FromMilliseconds(500).TotalMilliseconds;

@@ -41,12 +41,12 @@ namespace TcUnit.TestAdapter.Models
         public bool IsInRunMode()
         {
             adsClient.TryReadState(out StateInfo stateInfo);
-            return stateInfo.AdsState != AdsState.Run;
+            return stateInfo.AdsState == AdsState.Run;
         }
 
         public void Connect()
         {
-            adsClient.Timeout = (int)TimeSpan.FromMilliseconds(500).TotalMilliseconds;
+            adsClient.Timeout = (int)TimeSpan.FromSeconds(1).TotalMilliseconds;
             adsClient.Connect(amsNetId, (int)AmsPort.SystemService);
         }
 
@@ -57,7 +57,7 @@ namespace TcUnit.TestAdapter.Models
 
         public bool SwitchRuntimeState(AdsStateCommand state, TimeSpan timeout)
         {
-            var result = adsClient.SetAdsState(state, TimeSpan.FromMilliseconds(500), timeout, true, false);
+            var result = adsClient.SetAdsState(state, TimeSpan.FromSeconds(1), timeout, true, false);
             return result.RequestSucceeded;
         }
 

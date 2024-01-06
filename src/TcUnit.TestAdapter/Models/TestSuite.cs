@@ -53,8 +53,11 @@ namespace TcUnit.TestAdapter.Models
             var testSuite = new TestSuite();
             testSuite.Name = functionBlock.Name;
 
-            testSuite.ParseTestCases(functionBlock.Implementation);
-
+            if(functionBlock.Implementation != null)
+            {
+                testSuite.ParseTestCases(functionBlock.Implementation);
+            }
+            
             foreach (var method in functionBlock.Methods.Values)
             {
                 testSuite.ParseTestCases(method.Implementation);

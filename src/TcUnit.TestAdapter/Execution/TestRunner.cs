@@ -179,18 +179,26 @@ namespace TcUnit.TestAdapter.Execution
             var stopWatch = new Stopwatch();
             stopWatch.Start();
 
-            PrepareTargetForTestRun(targetRuntime, project, cleanUpBeforeTestRun);
+            IEnumerable<TestCaseResult> testResults = null;
 
-            PerformTestRunOnTarget(targetRuntime);
-
-            var testResults = CollectTestRunResultsFromTarget(targetRuntime);
-
-            if (cleanUpAfterTestRun)
+            try
             {
-                CleanUpTargetAfterTestRun(targetRuntime);
-            }
 
-            targetRuntime.Disconnect();
+                PrepareTargetForTestRun(targetRuntime, project, cleanUpBeforeTestRun);
+
+                PerformTestRunOnTarget(targetRuntime);
+
+                testResults = CollectTestRunResultsFromTarget(targetRuntime);
+            }
+            finally 
+            {
+                if (cleanUpAfterTestRun)
+                {
+                    CleanUpTargetAfterTestRun(targetRuntime);
+                }
+
+                targetRuntime.Disconnect();
+            }
 
             stopWatch.Stop();
 
@@ -292,9 +300,7 @@ namespace TcUnit.TestAdapter.Execution
         {
             target.SwitchToRunMode(TimeSpan.FromSeconds(10));
 
-            var isSuccess = RetryUntilSuccessOrTimeout(() => {
-                                return target.IsTestRunFinished && target.IsInRunMode;
-                            }, TimeSpan.FromSeconds(10));
+            var isSuccess = RetryUntilSuccessOrTimeout(() => target.IsTestRunFinished(), TimeSpan.FromSeconds(10));
 
             if (!isSuccess)
             {

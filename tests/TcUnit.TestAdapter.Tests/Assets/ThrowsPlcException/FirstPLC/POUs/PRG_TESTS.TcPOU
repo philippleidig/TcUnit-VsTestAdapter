@@ -4,9 +4,6 @@
     <Declaration><![CDATA[PROGRAM PRG_TESTS
 VAR
     fbTestSuite1Instance1 : FB_TestSuite1;
-    fbTestSuite2Instance1 : FB_TestSuite2;
-    fbTestSuite2Instance2 : FB_TestSuite2;
-    fbTestSuiteGroup : FB_TestSuiteGroup;
 END_VAR
 ]]></Declaration>
     <Implementation>

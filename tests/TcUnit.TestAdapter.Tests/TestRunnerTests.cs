@@ -11,6 +11,8 @@ using Moq;
 using TcUnit.TestAdapter.RunSettings;
 using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using TwinCAT.Ads;
+using Microsoft.VisualStudio.TestPlatform.Common;
+using TcUnit.TestAdapter.Tests.Mocks;
 
 namespace TcUnit.TestAdapter.Execution
 {
@@ -18,6 +20,21 @@ namespace TcUnit.TestAdapter.Execution
     [TestClass]
     public class TestRunnerTests
     {
+        [TestMethod]
+        public void TestDiscoverTestsInNonSuitableProject()
+        {
+            var filePath = @"NonSuitablePlcTestProject\NonSuitablePlcTestProject.tsproj";
+            var project = TwinCATXAEProject.Load(filePath);
+            var logger = new MessageLoggerMock();
+
+            var testRunner = new TestRunner();
+            var testCases = testRunner.DiscoverTests(project, logger);
+
+            Assert.AreEqual(0, testCases.Count());
+            Assert.AreEqual(1, logger.Warnings.Count());
+            Assert.IsTrue(logger.Warnings.FirstOrDefault().Contains("Found non suitable PLC project"));
+        }
+
         [TestMethod]
         public void TestDiscoverTests()
         {

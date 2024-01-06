@@ -3,7 +3,7 @@ using System.Text;
 using TcUnit.TestAdapter.Execution;
 using static TcUnit.TestAdapter.Execution.XUnitTestResultParser;
 
-namespace TcUnit.TestAdapter.Tests
+namespace TcUnit.TestAdapter.Execution
 {
     [TestClass]
     public class XUnitTestResultParserTests

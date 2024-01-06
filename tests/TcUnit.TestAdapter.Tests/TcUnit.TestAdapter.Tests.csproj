@@ -26,6 +26,7 @@
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="xcopy /Y /S &quot;$(SolutionDir)tests\TcUnit.TestAdapter.Tests\Assets\PlcTestProject&quot; &quot;$(TargetDir)\PlcTestProject\&quot;  " />
+    <Exec Command="xcopy /Y /S &quot;$(SolutionDir)tests\TcUnit.TestAdapter.Tests\Assets\NonSuitablePlcTestProject&quot; &quot;$(TargetDir)\NonSuitablePlcTestProject\&quot;  " />
     <Exec Command="xcopy /Y /S &quot;$(SolutionDir)tests\TcUnit.TestAdapter.Tests\Assets\ThrowsPlcException&quot; &quot;$(TargetDir)\ThrowsPlcException\&quot;  " />
   </Target>
 

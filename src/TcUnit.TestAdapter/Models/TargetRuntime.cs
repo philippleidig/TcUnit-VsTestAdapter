@@ -34,8 +34,14 @@ namespace TcUnit.TestAdapter.Models
         }
 
         public bool IsReachable => systemService.IsReachable();
-        public bool IsInRunMode => systemService.IsInRunMode();
-        public bool IsTestRunFinished => systemService.FileExistsInBootFolder(TestAdapter.TestResultPath);
+        public bool IsInRunMode()
+        {
+            return systemService.IsInRunMode();
+        }  
+        public bool IsTestRunFinished()
+        {
+            return systemService.FileExistsInBootFolder(TestAdapter.TestResultPath) && IsInRunMode();
+        }  
 
         public void SwitchToConfigMode(TimeSpan timeout)
         {

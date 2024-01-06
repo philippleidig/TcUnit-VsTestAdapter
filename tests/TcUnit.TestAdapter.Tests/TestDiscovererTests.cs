@@ -25,7 +25,7 @@ namespace TcUnit.TestAdapter.Discovery
             testDiscoverer.DiscoverTests(testSources, mockDiscoveryContext, mockLogger, testCaseDiscoverySink);
 
             // Assert
-            Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 17); 
+            Assert.AreEqual(17, testCaseDiscoverySink.TestCases.Count); 
         }
 
         [TestMethod]
@@ -47,7 +47,7 @@ namespace TcUnit.TestAdapter.Discovery
             testDiscoverer.DiscoverTests(testSources, mockDiscoveryContext, mockLogger, testCaseDiscoverySink);
 
             // Assert
-            Assert.IsTrue(testCaseDiscoverySink.TestCases.Count == 34);
+            Assert.AreEqual(34,testCaseDiscoverySink.TestCases.Count);
         }
     }
 

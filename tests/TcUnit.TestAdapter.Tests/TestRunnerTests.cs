@@ -48,7 +48,7 @@ namespace TcUnit.TestAdapter.Execution
               "PRG_TESTS.fbTestSuiteGroup.fbTestSuite3Instance2.TestCase3B"
             };
 
-            Assert.IsTrue(testCases.Count() == testCaseNames.Count);
+            Assert.AreEqual(testCaseNames.Count, testCases.Count());
 
             foreach (var testCase in testCases)
             {
@@ -82,7 +82,7 @@ namespace TcUnit.TestAdapter.Execution
 
             var testRun = testRunner.RunTests(project, tests, settings, logger);
 
-            Assert.IsTrue(testRun.Results.Count() == 17);
+            Assert.AreEqual(17, testRun.Results.Count());
         }
     }
 }

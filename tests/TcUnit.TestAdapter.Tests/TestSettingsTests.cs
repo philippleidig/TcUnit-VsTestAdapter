@@ -132,6 +132,26 @@ namespace TcUnit.TestAdapter.Tests
         }
 
         [TestMethod]
+        public void TestDuplicateXmlEntry()
+        {
+            string settingsXml =
+              @"<TcUnit>
+                   <CleanUpAfterTestRun>false</CleanUpAfterTestRun>
+                   <Target>192.168.0.1.1.1</Target>
+                   <Target>192.168.0.1.1.1</Target>
+                </TcUnit>";
+
+            var runSettingsProvider = new RunSettingsProvider();
+
+            Assert.ThrowsException<InvalidTestSettingsException>(() => {
+                using (XmlReader reader = XmlReader.Create(new StringReader(settingsXml)))
+                {
+                    runSettingsProvider.Load(reader);
+                }
+            });
+        }
+
+        [TestMethod]
         public void TestXmlElements()
         {
             string settingsXml =

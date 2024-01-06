@@ -18,6 +18,39 @@ namespace TcUnit.TestAdapter.Execution
     public class TestExecutorTests
     {
         [TestMethod]
+        public void TestExecuteTestsEmptySources()
+        {
+            Assert.ThrowsException<ArgumentException>(() => {
+                new TestExecutor().RunTests(new List<string>() , Mock.Of<IRunContext>(), Mock.Of<IFrameworkHandle>());
+            });
+        }
+
+        [TestMethod]
+        public void TestExecuteTestsNullSources()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => {
+                IEnumerable<string> sources = null;
+                new TestExecutor().RunTests(sources, Mock.Of<IRunContext>(), Mock.Of<IFrameworkHandle>());
+            });
+        }
+
+        [TestMethod]
+        public void TestExecuteTestsNullRunContext()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => {
+                new TestExecutor().RunTests(new List<string>() { "" }, null, Mock.Of<IFrameworkHandle>());
+            });
+        }
+
+        [TestMethod]
+        public void TestExecuteTestsNullFrameworkHandle()
+        {
+            Assert.ThrowsException<ArgumentNullException>(() => {
+                new TestExecutor().RunTests(new List<string>() { "" }, Mock.Of<IRunContext>(), null);
+            });
+        }
+
+        [TestMethod]
         public void TestExecuteTestsThrowsPlcException()
         {
             // Arrange

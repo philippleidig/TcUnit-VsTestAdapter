@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace TcUnit.TestAdapter.Tests
+namespace TcUnit.TestAdapter.Models
 {
     [TestClass]
     public class TwinCATModuleClassTests

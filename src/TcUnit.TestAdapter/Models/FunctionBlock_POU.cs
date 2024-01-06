@@ -9,44 +9,38 @@ namespace TcUnit.TestAdapter.Models
 {
     public class FunctionBlock_POU : POU
     {
-        public Dictionary<string, Method_POU> Methods = new Dictionary<string, Method_POU>();
-        public string Extends { get; set; }
-        public List<string> AccessModifiers { get; set; } = new List<string>();
-        public List<string> Attributes { get; set; } = new List<string>();
-        public List<string> Implements { get; set; } = new List<string>();
+        public Dictionary<string, Method_POU> Methods { get; private set; } = new Dictionary<string, Method_POU>();
+        public string Extends { get; private set; }
+        public List<string> AccessModifiers { get; private set; } = new List<string>();
+        public List<string> Attributes { get; private set; } = new List<string>();
+        public List<string> Implements { get; private set; } = new List<string>();
 
-        private FunctionBlock_POU ()
+        private FunctionBlock_POU(string filepath)
+            : this(XDocument.Load(filepath, LoadOptions.SetLineInfo))
         {
-            
-        }
-
-        public static FunctionBlock_POU ParseFromFilePath(string filepath)
-        {
-            if(!File.Exists(filepath))
-            {
-                throw new FileNotFoundException();
-            }
-
-            if(!filepath.Contains(".TcPOU"))
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-
-            var functionBlock = new FunctionBlock_POU();
-
             var file = Path.GetFileName(filepath);
 
-            functionBlock.Name = file.Replace(".TcPOU", "");
-            functionBlock.FilePath = filepath;
+            Name = file.Replace(".TcPOU", "");
+            FilePath = filepath;
+        }
 
-            XElement xFunctionBlock = XDocument.Load(filepath, LoadOptions.SetLineInfo).Element("TcPlcObject").Elements("POU").First<XElement>();
+        private FunctionBlock_POU(XDocument document)
+        {
+            XElement xFunctionBlock = document.Element("TcPlcObject")
+                                              .Elements("POU")
+                                              .First<XElement>();
 
-            functionBlock.Id = Guid.Parse(xFunctionBlock.Attribute("Id").Value);
+            Id = Guid.Parse(xFunctionBlock.Attribute("Id").Value);
+
+            var implementation = xFunctionBlock.Element("Implementation").Element("ST");
+
+            if (implementation != null)
+            {
+                Implementation = new StructuredTextImplementation(implementation);
+            }
 
             var declaration = xFunctionBlock.Element("Declaration").Value;
-
-            functionBlock.Declaration = declaration;
-            functionBlock.Implementation = xFunctionBlock.Element("Implementation").Element("ST").Value;
+            Declaration = declaration;
 
             string lineEndingOfFile = declaration.Contains("\r\n") ? "\r\n" : "\n";
 
@@ -75,13 +69,13 @@ namespace TcUnit.TestAdapter.Models
                         bool extendsStarts = (part.ToUpperInvariant() == "EXTENDS");
                         if (implements && !extendsStarts)
                         {
-                            functionBlock.Implements.Add(part);
+                            Implements.Add(part);
                         }
 
                         bool implementsStarts = (part.ToUpperInvariant() == "IMPLEMENTS");
                         if (extends && !implementsStarts)
                         {
-                            functionBlock.Extends = part;
+                            Extends = part;
                         }
 
                         if (implementsStarts)
@@ -101,7 +95,7 @@ namespace TcUnit.TestAdapter.Models
                             || part.ToUpperInvariant() == "PUBLIC"
                         )
                         {
-                            functionBlock.AccessModifiers.Add(part);
+                            AccessModifiers.Add(part);
                         }
                     }
 
@@ -112,11 +106,36 @@ namespace TcUnit.TestAdapter.Models
 
             foreach (XElement xMethod in xFunctionBlock.Elements("Method"))
             {
-                var method = Method_POU.Parse(xMethod);
-                functionBlock.Methods.Add(method.Name, method);
+                try
+                {
+                    var method = Method_POU.Parse(xMethod);
+                    Methods.Add(method.Name, method);
+                }
+                catch (NotSupportedException ex)
+                {
+                    // skip method due to implementation language
+                }
+            }
+        }
+
+        public static FunctionBlock_POU Parse(XDocument document)
+        {
+            return new FunctionBlock_POU(document);
+        }
+
+        public static FunctionBlock_POU Load(string filepath)
+        {
+            if (!File.Exists(filepath))
+            {
+                throw new FileNotFoundException();
             }
 
-            return functionBlock;
+            if (!filepath.Contains(".TcPOU"))
+            {
+                throw new ArgumentOutOfRangeException();
+            }
+
+            return new FunctionBlock_POU(filepath);
         }
     }
 }

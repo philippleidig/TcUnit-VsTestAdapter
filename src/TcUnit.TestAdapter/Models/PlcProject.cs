@@ -92,7 +92,7 @@ namespace TcUnit.TestAdapter.Models
 
                     if (File.Exists(pouFilePath))
                     {
-                        var functionBlock = FunctionBlock_POU.ParseFromFilePath(pouFilePath);
+                        var functionBlock = FunctionBlock_POU.Load(pouFilePath);
                         FunctionBlocks.Add(functionBlock);
                     }
                 }

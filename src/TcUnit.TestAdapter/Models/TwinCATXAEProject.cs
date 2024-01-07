@@ -2,13 +2,17 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Xml;
 using System.Xml.Linq;
+using System.Xml.Serialization;
+using TcUnit.TestAdapter.Schemas;
 
 namespace TcUnit.TestAdapter.Models
 {
     public class TwinCATXAEProject
     {
-        private List<TwinCATBootProject> _bootProjects;
+		private TcSmProject _projectFile;
+		private List<TwinCATBootProject> _bootProjects;
         private List<PlcProject> _plcProjects;
 
         public IEnumerable<TwinCATBootProject> BootProjects => _bootProjects;
@@ -21,8 +25,10 @@ namespace TcUnit.TestAdapter.Models
         public string ProjectFolder { get; private set; }
         public string FilePath { get; private set; }
 
-        private TwinCATXAEProject(string filepath)
-        {
+        private TwinCATXAEProject(string filepath, TcSmProject project )
+		{
+			_projectFile = project;
+
             _bootProjects = new List<TwinCATBootProject>();
             _plcProjects = new List<PlcProject>();
 
@@ -53,20 +59,21 @@ namespace TcUnit.TestAdapter.Models
 
         private void ParseRealtimeSettings()
         {
-            var projectFile = XDocument.Load(FilePath);
-            var realtimeSettings = projectFile.Element("TcSmProject")
-                                                .Element("Project")
-                                                .Element("System")
-                                                .Element("Settings");
+			var systemSettings = _projectFile.Project.System.Settings;
 
-            if (realtimeSettings != null)
-            {
-                int.TryParse(realtimeSettings.Attribute("MaxCpus")?.Value, out int maxCpuCount);
-                int.TryParse(realtimeSettings.Attribute("NonWinCpus")?.Value, out int isolatedCpuCount);
-                var sharedCpuCount = maxCpuCount - isolatedCpuCount;
+			if(systemSettings == null)
+			{
+				return;
+			}
 
-                RealtimeSettings = new Tuple<int,int>(sharedCpuCount, isolatedCpuCount);
-            }
+			if (systemSettings.MaxCpusSpecified) 
+			{
+				int maxCpuCount = systemSettings.MaxCpus;
+				int isolatedCpuCount = systemSettings.NonWinCpus;
+				int sharedCpuCount = maxCpuCount - isolatedCpuCount;
+
+				RealtimeSettings = new Tuple<int, int>(sharedCpuCount, isolatedCpuCount);
+			}
         }
 
         private void ParseBootProjects()
@@ -95,25 +102,61 @@ namespace TcUnit.TestAdapter.Models
 
         private void ParsePlcProjects()
         {
-            _plcProjects.Clear();
+			_plcProjects.Clear();
 
-            var plcProjectFiles = Directory.GetFiles(ProjectFolder, "*.plcproj", SearchOption.AllDirectories);
 
-            foreach (var projectFile in plcProjectFiles)
-            {
-                var plcProject = PlcProject.ParseFromProjectFile(projectFile);
-                _plcProjects.Add(plcProject);
-            }
+			foreach (var plcProject in _projectFile.Project.Plc.Project)
+			{
+				var plcProjFilePath = "";
+
+				if (!string.IsNullOrEmpty(plcProject.PrjFilePath) 
+					&& string.IsNullOrEmpty(plcProject.File))
+				{
+					plcProjFilePath = plcProject.PrjFilePath; 
+				}
+				else if (string.IsNullOrEmpty(plcProject.PrjFilePath) 
+					&& !string.IsNullOrEmpty(plcProject.File))
+				{
+					// independent project file - xti
+
+					string xtiFilePath = new DirectoryInfo(FilePath).Parent.FullName.ToString() + "\\_Config\\PLC\\" + plcProject.File;
+
+					StreamReader xtiReader = new StreamReader(xtiFilePath);
+					XmlSerializer xtiSerializer = new XmlSerializer(typeof(TcSmItem));
+					TcSmItem Xti = (TcSmItem)xtiSerializer.Deserialize(xtiReader);
+					TcSmItemTypeProject project = (TcSmItemTypeProject)Xti.Items[0];
+					plcProjFilePath = !string.IsNullOrEmpty(project.PrjFilePath) ? project.PrjFilePath.ToString() : "";
+					plcProjFilePath = !string.IsNullOrEmpty(plcProjFilePath) ? plcProjFilePath.Replace("..\\", "") : "";
+					xtiReader.Close();
+				}
+
+				plcProjFilePath = Path.Combine(ProjectFolder, plcProjFilePath);
+
+				if (File.Exists(plcProjFilePath))
+				{
+					_plcProjects.Add(PlcProject.Parse(plcProjFilePath));
+				}
+			}
         }
 
         public static TwinCATXAEProject Load(string filepath)
         {
-            if (Path.GetExtension(filepath) != TestAdapter.TsProjFileExtension)
+			if (!File.Exists(filepath))
+			{
+				throw new FileNotFoundException();
+			}
+
+			if (Path.GetExtension(filepath) != TestAdapter.TsProjFileExtension)
             {
                 throw new ArgumentOutOfRangeException(nameof(filepath));
             }
 
-            return new TwinCATXAEProject(filepath);
+			XmlSerializer serializer = new XmlSerializer(typeof(TcSmProject));
+			StreamReader reader = new StreamReader(filepath);
+			TcSmProject project = (TcSmProject)serializer.Deserialize(reader);
+			reader.Close();
+
+			return new TwinCATXAEProject(filepath, project);
         }
 
     }

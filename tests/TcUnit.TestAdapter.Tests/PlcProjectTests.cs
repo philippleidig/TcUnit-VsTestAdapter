@@ -15,7 +15,7 @@ namespace TcUnit.TestAdapter.Models
         {
             var filePath = @"PlcTestProject\FirstPLC\FirstPLC.plcproj";
 
-            var plcProject = PlcProject.ParseFromProjectFile(filePath);
+            var plcProject = PlcProject.Parse(filePath);
 
             Assert.IsTrue(plcProject.FunctionBlocks.Find(x => x.Name == "FB_TestSuite2") != null);
             Assert.IsTrue(plcProject.ModuleClasses[0].DataTypes.Find(x => x.Name == "FB_TestSuite2") != null);

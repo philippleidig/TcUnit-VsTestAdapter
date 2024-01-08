@@ -17,9 +17,7 @@ namespace TcUnit.TestAdapter.Models
 
         public IEnumerable<TwinCATBootProject> BootProjects => _bootProjects;
         public IEnumerable<PlcProject> PlcProjects => _plcProjects;
-
         public Tuple<int, int> RealtimeSettings { get; private set; }
-
         public bool IsProjectPreBuild => BootProjects.Count() > 0;
         public bool IsPlcProjectIncluded => PlcProjects.Count() > 0;
         public string ProjectFolder { get; private set; }
@@ -36,7 +34,6 @@ namespace TcUnit.TestAdapter.Models
             ProjectFolder = Path.GetDirectoryName(filepath);
 
             ParseRealtimeSettings();
-
             ParseBootProjects();
             ParsePlcProjects();
         }
@@ -59,7 +56,7 @@ namespace TcUnit.TestAdapter.Models
 
         private void ParseRealtimeSettings()
         {
-			var systemSettings = _projectFile.Project.System.Settings;
+			var systemSettings = _projectFile.Project?.System?.Settings;
 
 			if(systemSettings == null)
 			{
@@ -104,7 +101,6 @@ namespace TcUnit.TestAdapter.Models
         {
 			_plcProjects.Clear();
 
-
 			foreach (var plcProject in _projectFile.Project.Plc.Project)
 			{
 				var plcProjFilePath = "";
@@ -123,11 +119,12 @@ namespace TcUnit.TestAdapter.Models
 
 					StreamReader xtiReader = new StreamReader(xtiFilePath);
 					XmlSerializer xtiSerializer = new XmlSerializer(typeof(TcSmItem));
-					TcSmItem Xti = (TcSmItem)xtiSerializer.Deserialize(xtiReader);
-					TcSmItemTypeProject project = (TcSmItemTypeProject)Xti.Items[0];
-					plcProjFilePath = !string.IsNullOrEmpty(project.PrjFilePath) ? project.PrjFilePath.ToString() : "";
-					plcProjFilePath = !string.IsNullOrEmpty(plcProjFilePath) ? plcProjFilePath.Replace("..\\", "") : "";
+					TcSmItem xti = (TcSmItem)xtiSerializer.Deserialize(xtiReader);
 					xtiReader.Close();
+
+					TcSmItemTypeProject project = (TcSmItemTypeProject)xti.Items[0];
+					plcProjFilePath = !string.IsNullOrEmpty(project.PrjFilePath) ? project.PrjFilePath : "";
+					plcProjFilePath = !string.IsNullOrEmpty(plcProjFilePath) ? plcProjFilePath.Replace("..\\", "") : "";				
 				}
 
 				plcProjFilePath = Path.Combine(ProjectFolder, plcProjFilePath);
@@ -141,15 +138,15 @@ namespace TcUnit.TestAdapter.Models
 
         public static TwinCATXAEProject Load(string filepath)
         {
+			if (Path.GetExtension(filepath) != TestAdapter.TsProjFileExtension)
+			{
+				throw new ArgumentOutOfRangeException(nameof(filepath));
+			}
+
 			if (!File.Exists(filepath))
 			{
 				throw new FileNotFoundException();
 			}
-
-			if (Path.GetExtension(filepath) != TestAdapter.TsProjFileExtension)
-            {
-                throw new ArgumentOutOfRangeException(nameof(filepath));
-            }
 
 			XmlSerializer serializer = new XmlSerializer(typeof(TcSmProject));
 			StreamReader reader = new StreamReader(filepath);

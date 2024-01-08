@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using System.Xml.Linq;
 using System.Xml.Serialization;
-using System.Xml.XPath;
-using TcUnit.TestAdapter.Extensions;
-using TcUnit.TestAdapter.RunSettings;
 using TcUnit.TestAdapter.Schemas;
 
 namespace TcUnit.TestAdapter.Models
 {
-    public class PlcProject
+	public class PlcProject
     {
 		private readonly Schemas.Project _projectFile;
 
@@ -36,19 +32,18 @@ namespace TcUnit.TestAdapter.Models
             ParsePOUs();
             ParseTMCs();
 			ParseLibraries();
-
 		}
 
         public static PlcProject Parse(string filepath)
         {
-            if (!File.Exists(filepath))
+			if (!filepath.Contains(".plcproj"))
+			{
+				throw new ArgumentOutOfRangeException();
+			}
+
+			if (!File.Exists(filepath))
             {
                 throw new FileNotFoundException();
-            }
-
-            if (!filepath.Contains(".plcproj"))
-            {
-                throw new ArgumentOutOfRangeException();
             }
 
 			XmlSerializer serializer = new XmlSerializer(typeof(Project));
@@ -59,7 +54,22 @@ namespace TcUnit.TestAdapter.Models
 			return new PlcProject(filepath, project);
         }
 
-        public static XNamespace XmlNamespace = "http://schemas.microsoft.com/developer/msbuild/2003";
+		private TwinCATModuleClass ParseTMC(string filepath)
+		{
+			if (!filepath.EndsWith(".tmc"))
+			{
+				return null;
+			}
+
+			var tmcFilePath = Path.Combine(FolderPathInFileSystem, filepath);
+
+			if (!File.Exists(tmcFilePath))
+			{
+				return null;
+			}
+
+			return TwinCATModuleClass.ParseFromFilePath(tmcFilePath);
+		}
 
         private void ParseTMCs()
         {
@@ -69,35 +79,15 @@ namespace TcUnit.TestAdapter.Models
 			{
 				if (itemGroup.None != null)
 				{
-					var relativePath = itemGroup.None.Include;
-
-					if (relativePath.EndsWith(".tmc"))
-					{
-						var tmcFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
-
-						if (File.Exists(tmcFilePath))
-						{
-							var tmc = TwinCATModuleClass.ParseFromFilePath(tmcFilePath);
-							ModuleClasses.Add(tmc);
-						}
-					}
+					var tmc = ParseTMC(itemGroup.None.Include);
+					ModuleClasses.Add(tmc);
 				}
 
 				// manually added *.tmc files appear as content
 				if (itemGroup.Content != null)
 				{
-					var relativePath = itemGroup.Content.Include;
-
-					if (relativePath.EndsWith(".tmc"))
-					{
-						var tmcFilePath = Path.Combine(FolderPathInFileSystem, relativePath);
-
-						if (File.Exists(tmcFilePath))
-						{
-							var tmc = TwinCATModuleClass.ParseFromFilePath(tmcFilePath);
-							ModuleClasses.Add(tmc);
-						}
-					}
+					var tmc = ParseTMC(itemGroup.Content.Include);
+					ModuleClasses.Add(tmc);
 				}
 			}
         }
@@ -115,19 +105,68 @@ namespace TcUnit.TestAdapter.Models
 
 				foreach (var pou in itemGroup.Compile)
 				{
-					if (pou.Include.Contains(".TcPOU"))
+					if (!pou.Include.Contains(".TcPOU"))
 					{
-						var pouFilePath = Path.Combine(FolderPathInFileSystem, pou.Include);
+						continue;
+					}
 
-						if (File.Exists(pouFilePath))
-						{
-							var functionBlock = FunctionBlock_POU.Load(pouFilePath);
-							FunctionBlocks.Add(functionBlock);
-						}
+					var pouFilePath = Path.Combine(FolderPathInFileSystem, pou.Include);
+
+					if (File.Exists(pouFilePath))
+					{
+						var functionBlock = FunctionBlock_POU.Load(pouFilePath);
+						FunctionBlocks.Add(functionBlock);
 					}
 				}
 			}
         }
+
+		private PlcLibraryReference ParsePlcLibrary(ProjectItemGroupPlaceholderReference library)
+		{
+			var libraryName = library.Include;
+
+			var reference = new PlcLibraryReference
+			{
+				Name = libraryName.Split(',')[0],
+			};
+
+			if (library.Parameters != null)
+			{
+				foreach (var parameter in library.Parameters)
+				{
+					var key = parameter.Key;
+					var value = parameter.Value;
+
+					reference.Parameters.Add(key, value);
+				}
+			}
+
+			return reference;
+		}
+
+
+		private PlcLibraryReference ParsePlcLibrary(ProjectItemGroupLibraryReference library)
+		{
+			var libraryName = library.Include;
+
+			var reference = new PlcLibraryReference
+			{
+				Name = libraryName.Split(',')[0],
+			};
+
+			if (library.Parameters != null)
+			{
+				foreach (var parameter in library.Parameters)
+				{
+					var key = parameter.Key;
+					var value = parameter.Value;
+
+					reference.Parameters.Add(key, value);
+				}
+			}
+
+			return reference;
+		}
 
 		private void ParseLibraries ()
 		{
@@ -139,26 +178,7 @@ namespace TcUnit.TestAdapter.Models
 				{
 					foreach (var library in itemGroup.PlaceholderReference)
 					{
-						var libraryName = library.Include;
-
-						var reference = new PlcLibraryReference
-						{
-							Name = libraryName.Split(',')[0],
-						};
-
-						if (library.Parameters == null)
-						{
-							continue;
-						}
-
-						foreach (var parameter in library.Parameters)
-						{
-							var key = parameter.Key;
-							var value = parameter.Value;
-
-							reference.Parameters.Add(key, value);
-						}
-
+						var reference = ParsePlcLibrary(library);
 						References.Add(reference);
 					}
 				}
@@ -167,26 +187,7 @@ namespace TcUnit.TestAdapter.Models
 				{
 					foreach (var library in itemGroup.LibraryReference)
 					{
-						var libraryName = library.Include;
-
-						var reference = new PlcLibraryReference
-						{
-							Name = libraryName.Split(',')[0],
-						};
-
-						if (library.Parameters == null)
-						{
-							continue;
-						}
-
-						foreach (var parameter in library.Parameters)
-						{
-							var key = parameter.Key;
-							var value = parameter.Value;
-
-							reference.Parameters.Add(key, value);
-						}
-
+						var reference = ParsePlcLibrary(library);
 						References.Add(reference);
 					}
 				}

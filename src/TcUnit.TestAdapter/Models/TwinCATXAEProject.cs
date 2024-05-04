@@ -67,6 +67,11 @@ namespace TcUnit.TestAdapter.Models
 
                 RealtimeSettings = new Tuple<int,int>(sharedCpuCount, isolatedCpuCount);
             }
+			else 
+			{
+				RealtimeSettings = new Tuple<int,int>(1, 0);
+			}
+		
         }
 
         private void ParseBootProjects()

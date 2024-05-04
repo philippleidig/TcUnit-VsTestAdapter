@@ -159,15 +159,6 @@ namespace TcUnit.TestAdapter.Execution
             var cleanUpAfterTestRun = runSettings.CleanUpAfterTestRun;
             var cleanUpBeforeTestRun = true;
 
-            if(AmsNetId.LocalHost != target && AmsNetId.Local != target)
-            {
-                var adsRemoteRoutes = TwinCATEnvironment.GetRemoteRoutes();
-                var targetRoute = adsRemoteRoutes.Where(r => r.NetId.Equals(target));
-
-                if (!targetRoute.Any())
-                    throw new Exception("No ADS route to target found.");
-            }
-
             var targetRuntime = new TargetRuntime(target);
 
             if (!targetRuntime.IsReachable)

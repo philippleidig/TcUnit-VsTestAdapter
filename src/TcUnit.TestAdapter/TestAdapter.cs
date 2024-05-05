@@ -22,6 +22,6 @@ namespace TcUnit.TestAdapter
 
         public const string PlcObjClass = "TComPlcObjDef";
 
-		public const double DefaultTimeoutSeconds = 10;
+        public const double DefaultTimeoutSeconds = 10;
     }
 }

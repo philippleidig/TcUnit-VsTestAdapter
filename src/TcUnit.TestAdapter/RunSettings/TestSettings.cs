@@ -18,13 +18,13 @@ namespace TcUnit.TestAdapter.RunSettings
         {
             Target = TestAdapter.DefaultTargetRuntime;
             CleanUpAfterTestRun = TestAdapter.DefaultCleanUpAfterTestRun;
-			TimeoutSeconds = TestAdapter.DefaultTimeoutSeconds;
+            TimeoutSeconds = TestAdapter.DefaultTimeoutSeconds;
         }
 
         public string Target { get; set; } 
         public bool CleanUpAfterTestRun { get; set; }
 
-		public double TimeoutSeconds { get; set; } = 10;
+        public double TimeoutSeconds { get; set; } = 10;
 
         public override XmlElement ToXml()
         {

@@ -158,7 +158,7 @@ namespace TcUnit.TestAdapter.Execution
             var target = AmsNetId.Parse(runSettings.Target);
             var cleanUpAfterTestRun = runSettings.CleanUpAfterTestRun;
             var cleanUpBeforeTestRun = true;
-			var testRunTimeout = runSettings.TimeoutSeconds;
+            var testRunTimeout = runSettings.TimeoutSeconds;
 
             var targetRuntime = new TargetRuntime(target);
 

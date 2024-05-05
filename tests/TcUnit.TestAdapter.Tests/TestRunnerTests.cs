@@ -83,8 +83,9 @@ namespace TcUnit.TestAdapter.Execution
 
 
             var settings = new TestSettings();
-            settings.Target = "192.168.4.1.1.1";
+            settings.Target = "127.0.0.1.1.1";
             settings.CleanUpAfterTestRun = true;
+			settings.TimeoutSeconds = 10;
 
             // attempt to clean up the target boot folder
             var target = AmsNetId.Parse(settings.Target);

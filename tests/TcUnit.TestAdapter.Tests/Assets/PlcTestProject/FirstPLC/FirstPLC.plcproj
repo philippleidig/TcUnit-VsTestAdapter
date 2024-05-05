@@ -76,7 +76,7 @@
         </Parameter>
         <Parameter ListName="GVL_PARAM_TCUNIT">
           <Key>XUNITFILEPATH</Key>
-          <Value>'C:\TwinCAT\3.1\Runtimes\UmRT_Default\3.1\Boot\tcunit_testresults.xml'</Value>
+          <Value>'%TC_BOOTPRJPATH%tcunit_testresults.xml'</Value>
         </Parameter>
       </Parameters>
     </PlaceholderReference>
@@ -88,7 +88,7 @@
   </ItemGroup>
   <ItemGroup>
     <PlaceholderResolution Include="TcUnit">
-      <Resolution>TcUnit, 1.3.0.0 (www.tcunit.org)</Resolution>
+      <Resolution>TcUnit, 1.3.2.0 (www.tcunit.org)</Resolution>
     </PlaceholderResolution>
   </ItemGroup>
   <ProjectExtensions>

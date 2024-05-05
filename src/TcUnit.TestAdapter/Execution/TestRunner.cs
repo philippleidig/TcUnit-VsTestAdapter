@@ -158,6 +158,7 @@ namespace TcUnit.TestAdapter.Execution
             var target = AmsNetId.Parse(runSettings.Target);
             var cleanUpAfterTestRun = runSettings.CleanUpAfterTestRun;
             var cleanUpBeforeTestRun = true;
+			var testRunTimeout = runSettings.TimeoutSeconds;
 
             var targetRuntime = new TargetRuntime(target);
 
@@ -177,7 +178,7 @@ namespace TcUnit.TestAdapter.Execution
 
                 PrepareTargetForTestRun(targetRuntime, project, cleanUpBeforeTestRun);
 
-                PerformTestRunOnTarget(targetRuntime);
+                PerformTestRunOnTarget(targetRuntime, testRunTimeout);
 
                 testResults = CollectTestRunResultsFromTarget(targetRuntime);
             }
@@ -287,11 +288,11 @@ namespace TcUnit.TestAdapter.Execution
             target.CleanUpBootFolder();
         }
 
-        private void PerformTestRunOnTarget(TargetRuntime target)
+        private void PerformTestRunOnTarget(TargetRuntime target, double TimeoutSeconds)
         {
             target.SwitchToRunMode(TimeSpan.FromSeconds(10));
 
-            var isSuccess = RetryUntilSuccessOrTimeout(() => target.IsTestRunFinished(), TimeSpan.FromSeconds(10));
+            var isSuccess = RetryUntilSuccessOrTimeout(() => target.IsTestRunFinished(), TimeSpan.FromSeconds(TimeoutSeconds));
 
             if (!isSuccess)
             {
